@@ -9,9 +9,13 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/svelte": "^7.1.0",
+    "@fontsource/instrument-sans": "^5.2.8",
     "@tailwindcss/vite": "^4.0.17",
     "astro": "^5.5.5",
-    "tailwindcss": "^4.0.17"
+    "svelte": "^5.38.1",
+    "tailwindcss": "^4.0.17",
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
     "rollup-plugin-visualizer": "^5.14.0"
