@@ -1,18 +1,61 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-import Snow from '../components/Snow.svelte';
+import Layout from "../layouts/Layout.astro";
+import Snow from "../components/Snow.svelte";
+import {Icon} from "astro-icon/components";
 ---
 <Layout>
-	<Snow client:only="svelte"/>
-	<main style="position:relative; z-index:0;">
-		<div class="px-36 py-36">
-			<div class="flex justify-center">
-				<div class="w-2/5">
-					<h1 class="text-2xl font-bold">Aaron Ye</h1>
-					<h1 class="pt-4 text-lg">Mathematics @ UWaterloo</h1>
-				</div>
-			</div>
-		</div>
-	</main>
+    <Snow client:only="svelte"/>
+    <main style="position:relative; z-index:0;">
+        <div class="px-36 py-24">
+            <div class="flex justify-center">
+                <div class="w-2/5">
+                    <h1 class="text-2xl font-bold text-ctp-mauve">Aaron Ye</h1>
+                    <h2 class="pt-2 pb-2 text-lg">Mathematics @ UWaterloo</h2>
+                    <hr class="border-1">
+                    <h1 class="text-2xl font-bold pt-12 text-ctp-mauve">About Me</h1>
+                    <p class="pt-2">
+                        I’m a first-year Math student at the University of Waterloo pursuing software engineering.
+                        I have experience building full-stack applications, with a focus on backend systems and clean,
+                        scalable design.
+                    </p>
+
+                    <h1 class="pt-8 font-bold">Currently:</h1>
+                    <ul class="list-none mt-3 space-y-2">
+                        <li class="flex items-start gap-3 pl-2">
+                            <Icon name="iconamoon--arrow-right-2-bold"
+                                  class="w-4 h-4 text-ctp-mauve flex-shrink-0 mt-1"
+                                  aria-hidden="true"/>
+                            <span>Studying Mathematics @ the University of Waterloo</span>
+                        </li>
+                        <li class="flex items-start gap-3 pl-2">
+                            <Icon name="iconamoon--arrow-right-2-bold" class="w-4 h-4 text-ctp-mauve flex-shrink-0 mt-1"
+                                  aria-hidden="true"/>
+                            <span>Learning about machine learning and AI</span>
+                        </li>
+                        <li class="flex items-start gap-3 pl-2">
+                            <Icon name="iconamoon--arrow-right-2-bold" class="w-4 h-4 text-ctp-mauve flex-shrink-0 mt-1"
+                                  aria-hidden="true"/>
+                            <span>Seeking Summer 2026 software engineering internships</span>
+                        </li>
+                    </ul>
+
+                    <h1 class="pt-8 font-bold">Previously:</h1>
+                    <ul class="list-none mt-3 space-y-2">
+                        <li class="flex items-start gap-3 pl-2">
+                            <Icon name="iconamoon--arrow-right-2-bold"
+                                  class="w-4 h-4 text-ctp-mauve flex-shrink-0 mt-1"
+                                  aria-hidden="true"/>
+                            <span>11x hackathon winner</span>
+                        </li>
+                        <li class="flex items-start gap-3 pl-2">
+                            <Icon name="iconamoon--arrow-right-2-bold" class="w-4 h-4 text-ctp-mauve flex-shrink-0 mt-1"
+                                  aria-hidden="true"/>
+                            <span>Organized 3 hackathons</span>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </main>
 </Layout>

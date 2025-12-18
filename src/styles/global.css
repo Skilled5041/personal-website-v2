@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@catppuccin/tailwindcss/mocha.css";
 
 html, body {
   font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
