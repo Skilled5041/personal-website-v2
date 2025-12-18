@@ -14,7 +14,8 @@ export default function GitTooltip({children, commitDate}: { children: ReactNode
                     <span>{children}</span>
                 </TooltipTrigger>
                 <TooltipContent>
-                    {`Last updated on ${new Date(commitDate).toLocaleDateString()}`}
+                    {commitDate && `Last updated on ${new Date(commitDate).toLocaleDateString()}`}
+                    {!commitDate && "Error fetching lastest commit"}
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>

@@ -2,7 +2,22 @@ export const prerender = false
 
 export async function GET() {
     const apiUrl = "https://api.github.com/repos/skilled5041/personal-website-v2/commits?per_page=1";
-    const response = await fetch(apiUrl);
+    const token = import.meta.env.GITHUB_TOKEN;
+
+    const response = await fetch(apiUrl, {
+        headers: {
+            "Accept": "application/vnd.github.v3+json",
+            ...(token && {"Authorization": `Bearer ${token}`})
+        }
+    });
+
+    if (!response.ok) {
+        return new Response(JSON.stringify({error: "Failed to fetch commit data"}), {
+            status: response.status,
+            headers: {"Content-Type": "application/json"}
+        });
+    }
+
     const data = await response.json();
     const shortSha = data[0].sha.substring(0, 7);
     const commitUrl = data[0].html_url;
