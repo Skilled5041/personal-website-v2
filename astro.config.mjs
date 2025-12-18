@@ -8,13 +8,18 @@ import svelte from "@astrojs/svelte";
 
 import icon from "astro-icon";
 
-export default defineConfig({
-    vite: {
-        plugins: [visualizer({
-            emitFile: true,
-            filename: "stats.html",
-        }), tailwindcss()]
-    },
+import vercel from "@astrojs/vercel";
 
-    integrations: [svelte(), icon({iconDir: "src/assets/icons"})]
+import react from "@astrojs/react";
+
+export default defineConfig({
+  vite: {
+      plugins: [visualizer({
+          emitFile: true,
+          filename: "stats.html",
+      }), tailwindcss()]
+  },
+
+  integrations: [svelte(), icon({iconDir: "src/assets/icons"}), react()],
+  adapter: vercel()
 });

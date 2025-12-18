@@ -1,23 +1,22 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Snow from "../components/Snow.svelte";
 import {Icon} from "astro-icon/components";
 ---
+
 <Layout>
-    <Snow client:only="svelte"/>
+    <!--TODO: 404 not found page-->
     <main style="position:relative; z-index:0;">
-        <!-- Use responsive padding so the layout works across screens -->
         <div class="px-6 sm:px-12 md:px-24 lg:px-36 py-12 md:py-24">
             <div class="flex justify-center">
-                <!-- Use a max-width container so content scales down on small screens -->
                 <div class="w-full max-w-3xl">
                     <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-ctp-mauve">Aaron Ye</h1>
                     <h2 class="pt-2 pb-2 text-base md:text-lg">Mathematics @ UWaterloo</h2>
-                    <hr class="border-1">
+                    <hr class="border-1 text-ctp-subtext0">
                     <h1 class="text-xl md:text-2xl lg:text-3xl font-bold pt-12 text-ctp-mauve">About Me</h1>
                     <p class="pt-2 text-sm md:text-base leading-relaxed">
                         I’m a first-year Math student at the University of Waterloo pursuing software engineering.
-                        I have experience building full-stack applications, with a focus on backend systems and clean,
+                        I have experience building full-stack applications, with a focus on backend systems and
+                        clean,
                         scalable design.
                     </p>
 

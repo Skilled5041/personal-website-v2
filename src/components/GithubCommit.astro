@@ -1,0 +1,21 @@
+---
+import {Icon} from "astro-icon/components";
+import {GET} from "../api/git-commit";
+import GitTooltip from "./GitTooltip";
+
+const githubCommitResponse = await GET();
+const githubCommitData = await githubCommitResponse.json()
+---
+
+<GitTooltip client:idle commitDate={githubCommitData.commitDate}>
+    <a href={githubCommitData.commitUrl} target="_blank" rel="noreferrer noopener"
+       class="flex items-center gap-2">
+        <Icon name="tabler--git-commit" class="mt-0.5 w-4 h-4 text-ctp-subtext0" aria-hidden="true"/>
+        <span>{githubCommitData.shortSha ?? "unknown"}</span>
+    </a>
+    <a slot="fallback" href={githubCommitData.commitUrl} target="_blank" rel="noreferrer noopener"
+       class="flex items-center gap-2">
+        <Icon name="tabler--git-commit" class="mt-0.5 w-4 h-4 text-ctp-subtext0" aria-hidden="true"/>
+        <span>{githubCommitData.shortSha ?? "unknown"}</span>
+    </a>
+</GitTooltip>
