@@ -1,9 +1,8 @@
 ---
-import {Icon} from "astro-icon/components";
 import GithubCommit from "../components/GithubCommit.astro"
+import VisitsCounter from "./VisitsCounter.astro";
 
 const currentYear = new Date().getFullYear();
-const viewCount = "12,345";
 ---
 <footer class="w-full px-6 sm:px-12 md:px-24 lg:px-36">
     <hr class="max-w-3xl text-ctp-subtext0 mx-auto">
@@ -13,10 +12,7 @@ const viewCount = "12,345";
         </div>
         <div class="flex items-center gap-6">
             <GithubCommit/>
-            <div class="flex items-center gap-2">
-                <Icon name="tabler--eye" class="w-4 h-4 mt-0.5 text-ctp-subtext0" aria-hidden="true"/>
-                <span>{viewCount}</span>
-            </div>
+            <VisitsCounter/>
         </div>
     </div>
 </footer>

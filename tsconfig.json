@@ -9,6 +9,7 @@
   ],
   "baseUrl": ".",
   "compilerOptions": {
+    "verbatimModuleSyntax": false,
     "baseUrl": ".",
     "paths": {
       "@/*": [

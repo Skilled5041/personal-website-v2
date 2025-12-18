@@ -1,0 +1,21 @@
+---
+import {Icon} from "astro-icon/components";
+import {POST} from "../api/increment-visits-count";
+import VisitsCounterTooltip from "./VisitsCounterTooltip";
+
+const visitsCounterResponse = await POST();
+const visitsCounterData = await visitsCounterResponse.json()
+---
+
+<VisitsCounterTooltip client:idle>
+    <span
+            class="flex items-center gap-2">
+        <Icon name="tabler--eye" class="mt-0.5 w-4 h-4 text-ctp-subtext0" aria-hidden="true"/>
+        <span>{visitsCounterData.countValue ?? "unknown"}</span>
+    </span>
+    <span slot="fallback"
+          class="flex items-center gap-2">
+        <Icon name="tabler--eye" class="mt-0.5 w-4 h-4 text-ctp-subtext0" aria-hidden="true"/>
+        <span>loading...</span>
+    </span>
+</VisitsCounterTooltip>
