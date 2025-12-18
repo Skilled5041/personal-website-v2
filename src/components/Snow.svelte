@@ -18,6 +18,8 @@
     };
 
     type SnowLayer = {
+        // baseCount is the count intended for the reference resolution (BASE_AREA)
+        baseCount: number;
         count: number;
         minRadius: number;
         maxRadius: number;
@@ -28,17 +30,80 @@
         flakes: Snowflake[];
     };
 
+    // Base area: assume original design was for 1920x1080 (adjustable). If your original target was different,
+    // change BASE_WIDTH / BASE_HEIGHT accordingly.
+    const BASE_WIDTH = 1920;
+    const BASE_HEIGHT = 1080;
+    const BASE_AREA = BASE_WIDTH * BASE_HEIGHT;
+
     const layers: SnowLayer[] = [
-        { count: 67, minRadius: 0.25, maxRadius: 0.3, minSpeed: 0.6, maxSpeed: 0.7, minAngleDeg: 345, maxAngleDeg: 355, flakes: [] },
-        { count: 67, minRadius: 0.25, maxRadius: 0.3, minSpeed: 0.6, maxSpeed: 0.7, minAngleDeg: 25, maxAngleDeg: 40, flakes: [] },
-        { count: 100, minRadius: 0.45, maxRadius: 0.5, minSpeed: 0.8, maxSpeed: 0.9, minAngleDeg: 30, maxAngleDeg: 35, flakes: [] },
+        {
+            baseCount: 67,
+            count: 67,
+            minRadius: 0.25,
+            maxRadius: 0.3,
+            minSpeed: 0.6,
+            maxSpeed: 0.7,
+            minAngleDeg: 345,
+            maxAngleDeg: 355,
+            flakes: []
+        },
+        {
+            baseCount: 67,
+            count: 67,
+            minRadius: 0.25,
+            maxRadius: 0.3,
+            minSpeed: 0.6,
+            maxSpeed: 0.7,
+            minAngleDeg: 25,
+            maxAngleDeg: 40,
+            flakes: []
+        },
+        {
+            baseCount: 100,
+            count: 100,
+            minRadius: 0.45,
+            maxRadius: 0.5,
+            minSpeed: 0.8,
+            maxSpeed: 0.9,
+            minAngleDeg: 30,
+            maxAngleDeg: 35,
+            flakes: []
+        },
     ];
 
-    const FADE_DURATION = 15000; // 10 seconds
-    const SNOWPILE_HEIGHT = 0.2; // How much the snow pile rises
+    const FADE_DURATION = 15000; // 15 seconds
 
     let snowPile: number[] = [];
     let settledFlakes: Snowflake[] = [];
+
+    function getScaleFactor() {
+        const area = window.innerWidth * window.innerHeight;
+        // Scale factor relative to BASE_AREA. Clamp to a reasonable range so we don't create extreme counts.
+        const raw = area / BASE_AREA;
+        return Math.max(0.25, Math.min(raw, 3));
+    }
+
+    function updateCounts() {
+        const sf = getScaleFactor();
+        layers.forEach(layer => {
+            layer.count = Math.max(5, Math.round(layer.baseCount * sf));
+        });
+    }
+
+    function adjustLayerFlakesForCount() {
+        layers.forEach((layer, idx) => {
+            if (!layer.flakes) layer.flakes = [];
+            // Trim if too many
+            if (layer.flakes.length > layer.count) {
+                layer.flakes.length = layer.count;
+            }
+            // Add if too few
+            while (layer.flakes.length < layer.count) {
+                layer.flakes.push(createSnowflake(idx, -5));
+            }
+        });
+    }
 
     function resizeCanvas() {
         const dpr = window.devicePixelRatio || 1;
@@ -51,6 +116,15 @@
         canvas.style.height = `${height}px`;
 
         context.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        // Ensure snowPile matches new width
+        if (!snowPile.length || snowPile.length !== Math.ceil(window.innerWidth)) {
+            snowPile = Array(Math.ceil(window.innerWidth)).fill(window.innerHeight);
+        }
+
+        // Update counts based on new size and adjust flakes arrays to match
+        updateCounts();
+        adjustLayerFlakesForCount();
     }
 
     function createSnowflake(layerIndex: number, startY = Math.random() * window.innerHeight): Snowflake {
@@ -61,13 +135,21 @@
         const angleRad = angleDeg * Math.PI / 180;
         const drift = Math.sin(angleRad) * fallSpeed;
         const verticalSpeed = Math.cos(angleRad) * fallSpeed;
-        return { x: Math.random() * window.innerWidth, y: startY, radius, fallSpeed: verticalSpeed, drift, layer: layerIndex };
+        return {
+            x: Math.random() * window.innerWidth,
+            y: startY,
+            radius,
+            fallSpeed: verticalSpeed,
+            drift,
+            layer: layerIndex
+        };
     }
 
     function initializeLayers() {
+        updateCounts();
         for (let i = 0; i < layers.length; i++) {
             const layer = layers[i];
-            layer.flakes = Array.from({ length: layer.count }, () => createSnowflake(i));
+            layer.flakes = Array.from({length: layer.count}, () => createSnowflake(i));
         }
     }
 
@@ -76,9 +158,9 @@
         if (!snowPile.length || snowPile.length !== Math.ceil(window.innerWidth)) {
             snowPile = Array(Math.ceil(window.innerWidth)).fill(window.innerHeight);
         }
-        // Draw snow pile
+        // Draw the snow pile
         context.save();
-        context.fillStyle = 'rgba(255,255,255,0.7)';
+        context.fillStyle = "rgba(255,255,255,0.7)";
         for (let x = 0; x < snowPile.length; x++) {
             const y = snowPile[x];
             if (y < window.innerHeight) {
@@ -94,7 +176,7 @@
             context.save();
             context.globalAlpha = alpha;
             context.translate(flake.x, flake.y);
-            context.filter = 'brightness(0) invert(1)';
+            context.filter = "brightness(0) invert(1)";
             context.drawImage(snowflakeImg, -flake.radius * 12, -flake.radius * 12, flake.radius * 24, flake.radius * 24);
             context.restore();
             return (flake.fadeElapsed || 0) < FADE_DURATION;
@@ -112,7 +194,7 @@
                 context.save();
                 context.globalAlpha = 0.4;
                 context.translate(flake.x, flake.y);
-                context.filter = 'brightness(0) invert(1)';
+                context.filter = "brightness(0) invert(1)";
                 context.drawImage(snowflakeImg, -flake.radius * 12, -flake.radius * 12, flake.radius * 24, flake.radius * 24);
                 context.restore();
 
@@ -124,7 +206,7 @@
                 if (pileX >= 0 && pileX < snowPile.length) {
                     if (flake.y + flake.radius * 12 >= snowPile[pileX]) {
                         // Move to settledFlakes for fading
-                        settledFlakes.push({ ...flake, isSettled: true, fadeElapsed: 0 });
+                        settledFlakes.push({...flake, isSettled: true, fadeElapsed: 0});
                         // Raise the pile based on flake size
                         for (let dx = -flake.radius * 6; dx <= flake.radius * 6; dx++) {
                             const px = pileX + dx;
@@ -149,15 +231,18 @@
     onMount(() => {
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+        // Ensure we have a drawing context immediately so resize handlers are safe
+        context = canvas.getContext("2d")!;
+        window.addEventListener("resize", resizeCanvas);
+
         snowflakeImg = new window.Image();
         snowflakeImg.src = "/src/assets/snowflake.svg";
         snowflakeImg.onload = () => {
-            context = canvas.getContext("2d")!;
+            // On image load we can safely initialize and start the animation
             resizeCanvas();
             initializeLayers();
             drawFrame();
         };
-        window.addEventListener("resize", resizeCanvas);
     });
 
     onDestroy(() => {
