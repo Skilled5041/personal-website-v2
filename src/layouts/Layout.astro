@@ -3,6 +3,7 @@ import "../styles/global.css";
 import "@fontsource/instrument-sans"
 import Footer from "../components/Footer.astro";
 import Snow from "../components/Snow.svelte";
+import TitleSection from "../components/TitleSection.astro";
 ---
 
 <!doctype html>
@@ -15,8 +16,11 @@ import Snow from "../components/Snow.svelte";
     <title>Aaron Ye</title>
 </head>
 <body class="min-h-screen flex flex-col justify-between bg-ctp-base text-ctp-text">
-<Snow client:only="svelte"/>
-<slot/>
+<div>
+    <Snow client:only="svelte"/>
+    <TitleSection/>
+    <slot/>
+</div>
 <Footer/>
 </body>
 </html>
