@@ -1,6 +1,8 @@
 <script lang="ts">
     import {onDestroy, onMount} from "svelte";
 
+    let enabled: boolean = true;
+
     let canvas: HTMLCanvasElement;
     let context: CanvasRenderingContext2D;
     let animationFrameId: number;
@@ -228,30 +230,68 @@
         animationFrameId = window.requestAnimationFrame(drawFrame);
     }
 
-    onMount(() => {
+    let initialized = false;
+
+    function startSnow() {
+        if (initialized || !canvas) return;
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-        // Ensure we have a drawing context immediately so resize handlers are safe
         context = canvas.getContext("2d")!;
         window.addEventListener("resize", resizeCanvas);
 
         snowflakeImg = new window.Image();
         snowflakeImg.src = "/src/assets/snowflake.svg";
         snowflakeImg.onload = () => {
-            // On image load we can safely initialize and start the animation
             resizeCanvas();
             initializeLayers();
             drawFrame();
         };
+        initialized = true;
+    }
+
+    function stopSnow() {
+        if (animationFrameId) {
+            window.cancelAnimationFrame(animationFrameId);
+            animationFrameId = 0;
+        }
+        window.removeEventListener("resize", resizeCanvas);
+        initialized = false;
+    }
+
+    function handleSnowToggle(e: CustomEvent<{ enabled: boolean }>) {
+        enabled = e.detail.enabled;
+        if (enabled) {
+            // Wait for next tick so canvas is mounted
+            setTimeout(() => startSnow(), 0);
+        } else {
+            stopSnow();
+        }
+    }
+
+    onMount(() => {
+        // Read initial state from localStorage
+        const stored = localStorage.getItem("snow-enabled");
+        if (stored !== null) {
+            enabled = stored === "true";
+        }
+
+        // Listen for toggle events
+        window.addEventListener("snow-toggle", handleSnowToggle as EventListener);
+
+        if (enabled) {
+            startSnow();
+        }
     });
 
     onDestroy(() => {
-        if (animationFrameId) window.cancelAnimationFrame(animationFrameId);
-        window.removeEventListener("resize", resizeCanvas);
+        stopSnow();
+        window.removeEventListener("snow-toggle", handleSnowToggle as EventListener);
     });
 </script>
 
-<canvas
-        bind:this={canvas}
-        class="fixed inset-0 pointer-events-none z-[999999]"
-></canvas>
+{#if enabled}
+    <canvas
+            bind:this={canvas}
+            class="fixed inset-0 pointer-events-none z-[999999]"
+    ></canvas>
+{/if}
