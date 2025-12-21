@@ -44,8 +44,8 @@
             count: 67,
             minRadius: 0.25,
             maxRadius: 0.3,
-            minSpeed: 0.6,
-            maxSpeed: 0.7,
+            minSpeed: 0.5,
+            maxSpeed: 0.6,
             minAngleDeg: 345,
             maxAngleDeg: 355,
             flakes: []
@@ -55,8 +55,8 @@
             count: 67,
             minRadius: 0.25,
             maxRadius: 0.3,
-            minSpeed: 0.6,
-            maxSpeed: 0.7,
+            minSpeed: 0.5,
+            maxSpeed: 0.6,
             minAngleDeg: 25,
             maxAngleDeg: 40,
             flakes: []
@@ -66,8 +66,8 @@
             count: 100,
             minRadius: 0.45,
             maxRadius: 0.5,
-            minSpeed: 0.8,
-            maxSpeed: 0.9,
+            minSpeed: 0.7,
+            maxSpeed: 0.8,
             minAngleDeg: 30,
             maxAngleDeg: 35,
             flakes: []
