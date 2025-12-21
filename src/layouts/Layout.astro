@@ -15,16 +15,18 @@ import TitleSection from "../components/TitleSection.astro";
         <meta name="generator" content={Astro.generator} />
         <title>Aaron Ye</title>
     </head>
-    <body class="min-h-screen flex flex-col justify-between bg-ctp-base text-ctp-text">
-        <div>
-            <Snow client:only="svelte" />
-            <div class="px-6 sm:px-12 md:px-24 lg:px-36 flex justify-center">
-                <div class="w-full max-w-3xl">
-                    <TitleSection />
-                    <slot />
+    <body class="bg-ctp-base text-ctp-text">
+        <div class="flex flex-col justify-between min-h-screen">
+            <div>
+                <Snow client:only="svelte" />
+                <div class="px-6 sm:px-12 md:px-24 lg:px-36 flex justify-center">
+                    <div class="w-full max-w-3xl">
+                        <TitleSection />
+                        <slot />
+                    </div>
                 </div>
             </div>
+            <Footer />
         </div>
-        <Footer />
     </body>
 </html>
