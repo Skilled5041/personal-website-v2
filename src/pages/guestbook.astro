@@ -4,6 +4,7 @@ import { getGuestbookEntriesPaginated, countGuestbookEntries } from "@/lib/sqlc/
 import { db } from "@/lib/database";
 import Layout from "../layouts/Layout.astro";
 import loadingIcon from "../assets/icons/eos-icons--loading.svg";
+import DOMPurify from "isomorphic-dompurify";
 
 const ENTRIES_PER_PAGE = 10;
 
@@ -76,6 +77,12 @@ const dateFormat = new Intl.DateTimeFormat("en-US", {
 
 const formatDate = (date: Date) => {
     return dateFormat.format(date);
+};
+
+// Sanitize HTML and convert newlines to <br> for safe rendering
+const formatMessage = (message: string) => {
+    const sanitized = DOMPurify.sanitize(message, { ALLOWED_TAGS: [] });
+    return sanitized.replace(/\n/g, "<br>");
 };
 ---
 
@@ -203,7 +210,7 @@ const formatDate = (date: Date) => {
                             <h1 class="font-semibold">{entry.name}</h1>
                             <h1>{formatDate(entry.createdAt!)}</h1>
                         </div>
-                        <p>{entry.message}</p>
+                        <p set:html={formatMessage(entry.message)} />
                     </div>
                 ))
             )
@@ -270,6 +277,7 @@ const formatDate = (date: Date) => {
 
 <script>
     import { actions, isInputError } from "astro:actions";
+    import DOMPurify from "dompurify";
 
     const form = document.getElementById("guestbook-form") as HTMLFormElement;
     const formError = document.getElementById("form-error") as HTMLParagraphElement;
@@ -287,6 +295,18 @@ const formatDate = (date: Date) => {
         document.querySelector("[data-total-pages]")?.getAttribute("data-total-pages") || "1",
     );
     const ENTRIES_PER_PAGE = 10;
+
+    // Sanitize HTML and optionally convert newlines to <br>
+    function sanitize(text: string, preserveNewlines = false): string {
+        // First sanitize with DOMPurify (allows no tags by default when we pass text)
+        let sanitized = DOMPurify.sanitize(text, { ALLOWED_TAGS: [] });
+
+        if (preserveNewlines) {
+            sanitized = sanitized.replace(/\n/g, "<br>");
+        }
+
+        return sanitized;
+    }
 
     function setLoading(loading: boolean) {
         submitButton.disabled = loading;
@@ -480,10 +500,10 @@ const formatDate = (date: Date) => {
             newEntry.className = "bg-ctp-mantle rounded p-4";
             newEntry.innerHTML = `
                 <div class="flex justify-between">
-                    <h1 class="font-semibold">${result.data.name}</h1>
+                    <h1 class="font-semibold">${sanitize(result.data.name)}</h1>
                     <h1>${result.data.createdAt ? new Date(result.data.createdAt).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: false }) : ""}</h1>
                 </div>
-                <p>${result.data.message}</p>
+                <p>${sanitize(result.data.message, true)}</p>
             `;
             entriesContainer.prepend(newEntry);
 
@@ -504,10 +524,10 @@ const formatDate = (date: Date) => {
                             (entry: any) => `
                         <div class="bg-ctp-mantle rounded p-4">
                             <div class="flex justify-between">
-                                <h1 class="font-semibold">${entry.name}</h1>
+                                <h1 class="font-semibold">${sanitize(entry.name)}</h1>
                                 <h1>${entry.createdAt ? new Date(entry.createdAt).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: false }) : ""}</h1>
                             </div>
-                            <p>${entry.message}</p>
+                            <p>${sanitize(entry.message, true)}</p>
                         </div>
                     `,
                         )

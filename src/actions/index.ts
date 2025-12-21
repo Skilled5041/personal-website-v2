@@ -3,12 +3,18 @@ import { z } from "astro/zod";
 import { insertGuestbookEntry } from "@/lib/sqlc/guestbook_sql.ts";
 import { db } from "@/lib/database.ts";
 import { checkRateLimit } from "@/lib/rate-limit.ts";
+import DOMPurify from "isomorphic-dompurify";
 
 // Rate limit config: 5 submissions per minute
 const RATE_LIMIT_CONFIG = {
     windowMs: 30 * 1000, // 30 seconds
     maxRequests: 3,
 };
+
+// Sanitize user input - strip all HTML tags
+function sanitize(input: string): string {
+    return DOMPurify.sanitize(input, { ALLOWED_TAGS: [] }).trim();
+}
 
 export const server = {
     submitGuestbookEntry: defineAction({
@@ -45,10 +51,29 @@ export const server = {
             }
 
             const { name, message } = input;
+
+            // Sanitize inputs
+            const sanitizedName = sanitize(name);
+            const sanitizedMessage = sanitize(message);
+
+            // Re-validate after sanitization
+            if (sanitizedName.length === 0) {
+                throw new ActionError({
+                    code: "BAD_REQUEST",
+                    message: "Name cannot be empty after removing invalid characters.",
+                });
+            }
+            if (sanitizedMessage.length === 0) {
+                throw new ActionError({
+                    code: "BAD_REQUEST",
+                    message: "Message cannot be empty after removing invalid characters.",
+                });
+            }
+
             try {
                 return await insertGuestbookEntry(db, {
-                    name,
-                    message,
+                    name: sanitizedName,
+                    message: sanitizedMessage,
                 });
             } catch (error) {
                 throw new ActionError({
