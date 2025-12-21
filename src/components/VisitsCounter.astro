@@ -9,8 +9,9 @@ const visitsCounterData = await visitsCounterResponse.json()
 
 <VisitsCounterTooltip client:idle>
     <span
-            class="flex items-center gap-2">
-        <Icon name="tabler--eye" class="mt-0.5 w-4 h-4 text-ctp-subtext0" aria-hidden="true"/>
+            class="flex items-center gap-2 hover:text-ctp-mauve-100 duration-200 group">
+        <Icon name="tabler--eye" class="mt-0.5 w-4 h-4 text-ctp-subtext0 group-hover:text-ctp-mauve-100 duration-200"
+              aria-hidden="true"/>
         <span>{visitsCounterData.countValue ?? "unknown"}</span>
     </span>
     <span slot="fallback"
