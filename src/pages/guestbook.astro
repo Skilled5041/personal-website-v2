@@ -210,7 +210,7 @@ const formatMessage = (message: string) => {
                             <h1 class="font-semibold">{entry.name}</h1>
                             <h1>{formatDate(entry.createdAt!)}</h1>
                         </div>
-                        <p set:html={formatMessage(entry.message)} />
+                        <p class="pt-4" set:html={formatMessage(entry.message)} />
                     </div>
                 ))
             )
@@ -503,7 +503,7 @@ const formatMessage = (message: string) => {
                     <h1 class="font-semibold">${sanitize(result.data.name)}</h1>
                     <h1>${result.data.createdAt ? new Date(result.data.createdAt).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: false }) : ""}</h1>
                 </div>
-                <p>${sanitize(result.data.message, true)}</p>
+                <p class="pt-4">${sanitize(result.data.message, true)}</p>
             `;
             entriesContainer.prepend(newEntry);
 
