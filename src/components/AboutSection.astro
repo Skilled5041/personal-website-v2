@@ -1,5 +1,6 @@
 ---
 import {Icon} from "astro-icon/components";
+import button from "../assets/button/button.gif";
 ---
 <h1 class="text-xl md:text-2xl lg:text-3xl font-bold pt-12 text-ctp-mauve">About Me</h1>
 <p class="pt-2 text-sm md:text-base leading-relaxed">
@@ -50,4 +51,10 @@ import {Icon} from "astro-icon/components";
     <p class="pt-2 text-sm md:text-base leading-relaxed">
         Feel free to leave a message in my <a href="/guestbook" class="text-ctp-mauve hover:underline font-medium">guestbook</a>.
     </p>
+</div>
+
+<div class="pt-16">
+    <a href="https://aaronye.dev" target="_blank" rel="noreferrer noopener">
+        <img src={button.src} alt="Aaron's 88x31 button"/>
+    </a>
 </div>
