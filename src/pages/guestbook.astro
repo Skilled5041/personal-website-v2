@@ -1,5 +1,522 @@
 ---
+export const prerender = false;
+import { getGuestbookEntriesPaginated, countGuestbookEntries } from "@/lib/sqlc/guestbook_sql";
+import { db } from "@/lib/database";
 import Layout from "../layouts/Layout.astro";
+import loadingIcon from "../assets/icons/eos-icons--loading.svg";
+
+const ENTRIES_PER_PAGE = 10;
+
+const url = new URL(Astro.request.url);
+let page = parseInt(url.searchParams.get("page") || "1");
+
+if (isNaN(page) || page < 1) {
+    page = 1;
+}
+
+// Get total count first to clamp page
+const countResult = await countGuestbookEntries(db);
+const totalEntries = parseInt(countResult?.count || "0");
+const totalPages = Math.ceil(totalEntries / ENTRIES_PER_PAGE);
+
+// Clamp page to valid range before fetching
+if (totalPages > 0 && page > totalPages) {
+    page = totalPages;
+}
+
+const guestbookEntries = await getGuestbookEntriesPaginated(db, {
+    offset: ((page - 1) * ENTRIES_PER_PAGE).toString(),
+});
+
+// Generate page numbers for pagination
+function getPageNumbers(current: number, total: number): (number | "...")[] {
+    if (total <= 3) {
+        return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    const pages: (number | "...")[] = [];
+
+    if (current === 1) {
+        // First page: show 1, 2, 3, ..., last
+        pages.push(1, 2, 3);
+        if (total > 4) pages.push("...");
+        if (total > 3) pages.push(total);
+    } else if (current === total) {
+        // Last page: show first, ..., last-2, last-1, last
+        if (total > 3) pages.push(1);
+        if (total > 4) pages.push("...");
+        pages.push(total - 2, total - 1, total);
+    } else {
+        // Middle: show first, ..., prev, current, next, ..., last
+        if (current > 2) {
+            pages.push(1);
+            if (current > 3) pages.push("...");
+        }
+        pages.push(current - 1, current, current + 1);
+        if (current < total - 1) {
+            if (current < total - 2) pages.push("...");
+            pages.push(total);
+        }
+    }
+
+    return pages;
+}
+
+const miniPages = getPageNumbers(page, totalPages);
+
+const dateFormat = new Intl.DateTimeFormat("en-US", {
+    year: "numeric", // "2025"
+    month: "long", // "December"
+    day: "numeric", // "21"
+    hour: "numeric", // "10"
+    minute: "numeric", // "45"
+    second: "numeric", // "30"
+    hour12: false, // 24 hr time
+});
+
+const formatDate = (date: Date) => {
+    return dateFormat.format(date);
+};
 ---
 
-<Layout> coming soon </Layout>
+<Layout>
+    <div>
+        <h1 class="text-xl md:text-2xl lg:text-3xl pt-12 font-bold text-ctp-mauve">
+            Leave a message!
+        </h1>
+    </div>
+    <form id="guestbook-form" class="mt-4">
+        <div class="flex flex-col">
+            <label for="guestbookName">Name: <span class="text-ctp-red">*</span></label>
+            <input
+                class="border-2 border-ctp-surface0 rounded mt-1 h-8 p-2 focus:outline-none hover:border-ctp-mauve-100 focus:border-ctp-mauve-100 duration-200"
+                type="text"
+                id="guestbookName"
+                name="name"
+                placeholder="Your Name"
+                required
+            />
+        </div>
+        <div class="flex flex-col pt-4">
+            <label for="guestbookMessage">Message: <span class="text-ctp-red">*</span></label>
+            <textarea
+                class="border-2 border-ctp-surface0 rounded mt-1 p-2 focus:outline-none hover:border-ctp-mauve-100 focus:border-ctp-mauve-100 duration-200"
+                id="guestbookMessage"
+                name="message"
+                placeholder="Leave a message..."
+                required></textarea>
+        </div>
+        <button
+            id="submit-button"
+            class="rounded text-ctp-base font-semibold hover:bg-ctp-mauve-300 duration-200 cursor-pointer p-1 w-24 bg-ctp-mauve mt-6 flex items-center justify-center"
+            type="submit"
+        >
+            <span id="submit-text">Submit</span>
+            <img
+                id="submit-loading"
+                class="hidden"
+                width="24"
+                height="24"
+                src={loadingIcon.src}
+                alt="Loading..."
+            />
+        </button>
+        <div class="flex flex-row">
+            <p id="form-error" class="pt-2 h-4 text-ctp-red"></p>
+            <p id="form-success" class="pt-2 h-4 text-ctp-green"></p>
+        </div>
+    </form>
+
+    <!-- Page info and mini paginator -->
+    {
+        totalEntries > 0 && (
+            <div class="flex justify-between items-center pt-12" data-pagination-container>
+                <p
+                    class="text-ctp-subtext0"
+                    data-page-info
+                    data-total-entries={totalEntries}
+                    data-total-pages={totalPages}
+                >
+                    Page {page} of {totalPages} ({totalEntries}
+                    {totalEntries === 1 ? "message" : "messages"})
+                </p>
+                {totalPages > 0 && (
+                    <div class="flex items-center gap-1" data-paginator>
+                        <a
+                            href={page > 1 ? `?page=${page - 1}` : undefined}
+                            class:list={[
+                                "px-2 py-1 rounded text-sm",
+                                page === 1
+                                    ? "text-ctp-overlay0 cursor-not-allowed"
+                                    : "text-ctp-text hover:bg-ctp-surface0 duration-200",
+                            ]}
+                            aria-disabled={page === 1}
+                        >
+                            ←
+                        </a>
+                        {miniPages.map((p) =>
+                            p === "..." ? (
+                                <span class="text-sm text-ctp-subtext0 px-1">...</span>
+                            ) : (
+                                <a
+                                    href={`?page=${p}`}
+                                    class:list={[
+                                        "px-2 py-1 rounded text-sm duration-200",
+                                        p === page
+                                            ? "bg-ctp-mauve text-ctp-base font-semibold"
+                                            : "text-ctp-text hover:bg-ctp-surface0",
+                                    ]}
+                                >
+                                    {p}
+                                </a>
+                            ),
+                        )}
+                        <a
+                            href={page < totalPages ? `?page=${page + 1}` : undefined}
+                            class:list={[
+                                "px-2 py-1 rounded text-sm",
+                                page === totalPages
+                                    ? "text-ctp-overlay0 cursor-not-allowed"
+                                    : "text-ctp-text hover:bg-ctp-surface0 duration-200",
+                            ]}
+                            aria-disabled={page === totalPages}
+                        >
+                            →
+                        </a>
+                    </div>
+                )}
+            </div>
+        )
+    }
+
+    <div id="entries-container" class="flex flex-col gap-4 pt-4">
+        {
+            guestbookEntries.length === 0 ? (
+                <div class="text-center py-12 text-ctp-subtext0" data-empty-state>
+                    <p class="text-lg">No messages yet.</p>
+                    <p>Be the first to leave a message!</p>
+                </div>
+            ) : (
+                guestbookEntries.map((entry) => (
+                    <div class="bg-ctp-mantle rounded p-4">
+                        <div class="flex justify-between">
+                            <h1 class="font-semibold">{entry.name}</h1>
+                            <h1>{formatDate(entry.createdAt!)}</h1>
+                        </div>
+                        <p>{entry.message}</p>
+                    </div>
+                ))
+            )
+        }
+    </div>
+
+    <!-- Bottom page info and paginator -->
+    {
+        totalEntries > 0 && (
+            <div class="flex justify-between items-center pt-8 pb-12" data-pagination-container>
+                <p class="text-ctp-subtext0" data-page-info>
+                    Page {page} of {totalPages} ({totalEntries}
+                    {totalEntries === 1 ? "message" : "messages"})
+                </p>
+                {totalPages > 0 && (
+                    <div class="flex items-center gap-1" data-paginator>
+                        <a
+                            href={page > 1 ? `?page=${page - 1}` : undefined}
+                            class:list={[
+                                "px-2 py-1 rounded text-sm",
+                                page === 1
+                                    ? "text-ctp-overlay0 cursor-not-allowed"
+                                    : "text-ctp-text hover:bg-ctp-surface0 duration-200",
+                            ]}
+                            aria-disabled={page === 1}
+                        >
+                            ←
+                        </a>
+                        {miniPages.map((p) =>
+                            p === "..." ? (
+                                <span class="text-sm text-ctp-subtext0 px-1">...</span>
+                            ) : (
+                                <a
+                                    href={`?page=${p}`}
+                                    class:list={[
+                                        "px-2 py-1 rounded text-sm duration-200",
+                                        p === page
+                                            ? "bg-ctp-mauve text-ctp-base font-semibold"
+                                            : "text-ctp-text hover:bg-ctp-surface0",
+                                    ]}
+                                >
+                                    {p}
+                                </a>
+                            ),
+                        )}
+                        <a
+                            href={page < totalPages ? `?page=${page + 1}` : undefined}
+                            class:list={[
+                                "px-2 py-1 rounded text-sm",
+                                page === totalPages
+                                    ? "text-ctp-overlay0 cursor-not-allowed"
+                                    : "text-ctp-text hover:bg-ctp-surface0 duration-200",
+                            ]}
+                            aria-disabled={page === totalPages}
+                        >
+                            →
+                        </a>
+                    </div>
+                )}
+            </div>
+        )
+    }
+</Layout>
+
+<script>
+    import { actions, isInputError } from "astro:actions";
+
+    const form = document.getElementById("guestbook-form") as HTMLFormElement;
+    const formError = document.getElementById("form-error") as HTMLParagraphElement;
+    const formSuccess = document.getElementById("form-success") as HTMLParagraphElement;
+    const entriesContainer = document.getElementById("entries-container") as HTMLDivElement;
+    const submitButton = document.getElementById("submit-button") as HTMLButtonElement;
+    const submitText = document.getElementById("submit-text") as HTMLSpanElement;
+    const submitLoading = document.getElementById("submit-loading") as unknown as SVGElement;
+
+    let currentPage = parseInt(new URL(window.location.href).searchParams.get("page") || "1");
+    let totalEntries = parseInt(
+        document.querySelector("[data-total-entries]")?.getAttribute("data-total-entries") || "0",
+    );
+    let totalPages = parseInt(
+        document.querySelector("[data-total-pages]")?.getAttribute("data-total-pages") || "1",
+    );
+    const ENTRIES_PER_PAGE = 10;
+
+    function setLoading(loading: boolean) {
+        submitButton.disabled = loading;
+        submitText.classList.toggle("hidden", loading);
+        submitLoading.classList.toggle("hidden", !loading);
+    }
+
+    function getPageNumbers(current: number, total: number): (number | "...")[] {
+        if (total <= 3) {
+            return Array.from({ length: total }, (_, i) => i + 1);
+        }
+
+        const pages: (number | "...")[] = [];
+
+        if (current === 1) {
+            pages.push(1, 2, 3);
+            if (total > 4) pages.push("...");
+            if (total > 3) pages.push(total);
+        } else if (current === total) {
+            if (total > 3) pages.push(1);
+            if (total > 4) pages.push("...");
+            pages.push(total - 2, total - 1, total);
+        } else {
+            if (current > 2) {
+                pages.push(1);
+                if (current > 3) pages.push("...");
+            }
+            pages.push(current - 1, current, current + 1);
+            if (current < total - 1) {
+                if (current < total - 2) pages.push("...");
+                pages.push(total);
+            }
+        }
+
+        return pages;
+    }
+
+    function updatePagination() {
+        // Check if pagination containers exist in the DOM (not from initial query which may be stale)
+        const existingContainers = document.querySelectorAll("[data-pagination-container]");
+
+        // If there are no pagination containers but we now have entries, create them
+        if (existingContainers.length === 0 && totalEntries > 0) {
+            // Create top pagination container
+            const topContainer = document.createElement("div");
+            topContainer.className = "flex justify-between items-center pt-12";
+            topContainer.setAttribute("data-pagination-container", "");
+            topContainer.innerHTML = `
+                <p class="text-ctp-subtext0" data-page-info data-total-entries="${totalEntries}" data-total-pages="${totalPages}">
+                    Page ${currentPage} of ${totalPages} (${totalEntries} ${totalEntries === 1 ? "message" : "messages"})
+                </p>
+                <div class="flex items-center gap-1" data-paginator></div>
+            `;
+            entriesContainer.before(topContainer);
+
+            // Create bottom pagination container
+            const bottomContainer = document.createElement("div");
+            bottomContainer.className = "flex justify-between items-center pt-8 pb-12";
+            bottomContainer.setAttribute("data-pagination-container", "");
+            bottomContainer.innerHTML = `
+                <p class="text-ctp-subtext0" data-page-info>
+                    Page ${currentPage} of ${totalPages} (${totalEntries} ${totalEntries === 1 ? "message" : "messages"})
+                </p>
+                <div class="flex items-center gap-1" data-paginator></div>
+            `;
+            entriesContainer.after(bottomContainer);
+
+            // Re-query the elements and update paginators
+            const newPaginatorElements = document.querySelectorAll(
+                "[data-paginator]",
+            ) as NodeListOf<HTMLDivElement>;
+            updatePaginatorElements(newPaginatorElements);
+            return;
+        }
+
+        // Re-query page info and paginator elements to get current state
+        const currentPageInfoElements = document.querySelectorAll(
+            "[data-page-info]",
+        ) as NodeListOf<HTMLParagraphElement>;
+        const currentPaginatorElements = document.querySelectorAll(
+            "[data-paginator]",
+        ) as NodeListOf<HTMLDivElement>;
+
+        // Update page info text
+        currentPageInfoElements.forEach((el) => {
+            el.textContent = `Page ${currentPage} of ${totalPages} (${totalEntries} ${totalEntries === 1 ? "message" : "messages"})`;
+        });
+
+        // Update paginators
+        updatePaginatorElements(currentPaginatorElements);
+    }
+
+    function updatePaginatorElements(elements: NodeListOf<HTMLDivElement>) {
+        const miniPages = getPageNumbers(currentPage, totalPages);
+
+        elements.forEach((paginator) => {
+            if (totalPages === 0) {
+                paginator.innerHTML = "";
+                return;
+            }
+
+            let html = `
+                <a href="${currentPage > 1 ? `?page=${currentPage - 1}` : "javascript:void(0)"}"
+                   class="px-2 py-1 rounded text-sm ${currentPage === 1 ? "text-ctp-overlay0 cursor-not-allowed" : "text-ctp-text hover:bg-ctp-surface0 duration-200"}"
+                   ${currentPage === 1 ? 'aria-disabled="true"' : ""}>
+                    ←
+                </a>
+            `;
+
+            miniPages.forEach((p) => {
+                if (p === "...") {
+                    html += `<span class="text-sm text-ctp-subtext0 px-1">...</span>`;
+                } else {
+                    html += `
+                        <a href="?page=${p}"
+                           class="px-2 py-1 rounded text-sm duration-200 ${p === currentPage ? "bg-ctp-mauve text-ctp-base font-semibold" : "text-ctp-text hover:bg-ctp-surface0"}">
+                            ${p}
+                        </a>
+                    `;
+                }
+            });
+
+            html += `
+                <a href="${currentPage < totalPages ? `?page=${currentPage + 1}` : "javascript:void(0)"}"
+                   class="px-2 py-1 rounded text-sm ${currentPage === totalPages ? "text-ctp-overlay0 cursor-not-allowed" : "text-ctp-text hover:bg-ctp-surface0 duration-200"}"
+                   ${currentPage === totalPages ? 'aria-disabled="true"' : ""}>
+                    →
+                </a>
+            `;
+
+            paginator.innerHTML = html;
+        });
+    }
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        setLoading(true);
+        const result = await actions.submitGuestbookEntry(formData);
+        setLoading(false);
+
+        if (isInputError(result.error)) {
+            formSuccess.textContent = "";
+            if (result.error.fields.name) {
+                formError.textContent = "Name must between 1 and 32 characters.";
+                return;
+            } else if (result.error.fields.message) {
+                formError.textContent = "Message must be between 1 and 1024 characters.";
+                return;
+            }
+            return;
+        }
+
+        if (!result.data) {
+            formSuccess.textContent = "";
+            formError.textContent = "An unknown error occurred :(";
+            return;
+        }
+
+        formError.textContent = "";
+        formSuccess.textContent = "Successfully submitted!";
+        form.reset();
+
+        // Update pagination counts
+        totalEntries++;
+        totalPages = Math.ceil(totalEntries / ENTRIES_PER_PAGE);
+        currentPage = 1; // Go back to page 1
+        updatePagination();
+
+        // If we were on page 1, just prepend the new entry and remove the last if needed
+        // Otherwise, fetch page 1 entries from the server
+        if (
+            (currentPage === 1 && window.location.search === "") ||
+            window.location.search === "?page=1"
+        ) {
+            // Add new entry to the top of the list
+            const emptyState = entriesContainer.querySelector("[data-empty-state]");
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            const newEntry = document.createElement("div");
+            newEntry.className = "bg-ctp-mantle rounded p-4";
+            newEntry.innerHTML = `
+                <div class="flex justify-between">
+                    <h1 class="font-semibold">${result.data.name}</h1>
+                    <h1>${result.data.createdAt ? new Date(result.data.createdAt).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: false }) : ""}</h1>
+                </div>
+                <p>${result.data.message}</p>
+            `;
+            entriesContainer.prepend(newEntry);
+
+            // Remove the last entry if there are more than ENTRIES_PER_PAGE items
+            const entries = entriesContainer.children;
+            if (entries.length > ENTRIES_PER_PAGE) {
+                entries[entries.length - 1].remove();
+            }
+        } else {
+            // Fetch page 1 entries and replace the container content
+            try {
+                const response = await fetch("/api/guestbook-entries?page=1");
+                const data = await response.json();
+
+                if (data.entries) {
+                    entriesContainer.innerHTML = data.entries
+                        .map(
+                            (entry: any) => `
+                        <div class="bg-ctp-mantle rounded p-4">
+                            <div class="flex justify-between">
+                                <h1 class="font-semibold">${entry.name}</h1>
+                                <h1>${entry.createdAt ? new Date(entry.createdAt).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: false }) : ""}</h1>
+                            </div>
+                            <p>${entry.message}</p>
+                        </div>
+                    `,
+                        )
+                        .join("");
+
+                    // Update URL without reloading
+                    window.history.pushState({}, "", "/guestbook");
+                }
+            } catch (error) {
+                console.error("Failed to fetch page 1 entries:", error);
+            }
+        }
+
+        setTimeout(() => {
+            formError.textContent = "";
+        }, 3000);
+    });
+</script>
