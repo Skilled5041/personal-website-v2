@@ -18,8 +18,12 @@ import TitleSection from "../components/TitleSection.astro";
     <body class="min-h-screen flex flex-col justify-between bg-ctp-base text-ctp-text">
         <div>
             <Snow client:only="svelte" />
-            <TitleSection />
-            <slot />
+            <div class="px-6 sm:px-12 md:px-24 lg:px-36 flex justify-center">
+                <div class="w-full max-w-3xl">
+                    <TitleSection />
+                    <slot />
+                </div>
+            </div>
         </div>
         <Footer />
     </body>
