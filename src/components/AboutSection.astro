@@ -1,47 +1,60 @@
 ---
-import {Icon} from "astro-icon/components";
+import { Icon } from "astro-icon/components";
 import button from "../assets/button/button.gif";
 ---
+
 <h1 class="text-xl md:text-2xl lg:text-3xl font-bold pt-12 text-ctp-mauve">About Me</h1>
 <p class="pt-2 text-sm md:text-base leading-relaxed">
-    I’m a first-year Math student at the University of Waterloo pursuing software engineering.
-    I have experience building full-stack applications, with a focus on backend systems.
+    I’m a first-year Math student at the University of Waterloo pursuing software engineering. I
+    have experience building full-stack applications, with a focus on backend systems.
 </p>
 
 <h1 class="pt-8 font-bold text-lg md:text-xl">Currently:</h1>
 <ul class="list-none mt-3 space-y-2">
     <li class="flex items-start gap-3 pl-0 sm:pl-2">
-        <Icon name="iconamoon--arrow-right-2-bold"
-              class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
-              aria-hidden="true"/>
+        <Icon
+            name="iconamoon--arrow-right-2-bold"
+            class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
+            aria-hidden="true"
+        />
         <span class="text-sm md:text-base">Studying Mathematics @ the University of Waterloo</span>
     </li>
     <li class="flex items-start gap-3 pl-0 sm:pl-2">
-        <Icon name="iconamoon--arrow-right-2-bold"
-              class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
-              aria-hidden="true"/>
+        <Icon
+            name="iconamoon--arrow-right-2-bold"
+            class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
+            aria-hidden="true"
+        />
         <span class="text-sm md:text-base">Learning about machine learning and AI</span>
     </li>
     <li class="flex items-start gap-3 pl-0 sm:pl-2">
-        <Icon name="iconamoon--arrow-right-2-bold"
-              class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
-              aria-hidden="true"/>
-        <span class="text-sm md:text-base">Seeking Summer 2026 software engineering internships</span>
+        <Icon
+            name="iconamoon--arrow-right-2-bold"
+            class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
+            aria-hidden="true"
+        />
+        <span class="text-sm md:text-base"
+            >Seeking Summer 2026 software engineering internships</span
+        >
     </li>
 </ul>
 
 <h1 class="pt-8 font-bold text-lg md:text-xl">Previously:</h1>
 <ul class="list-none mt-3 space-y-2">
     <li class="flex items-start gap-3 pl-0 sm:pl-2">
-        <Icon name="iconamoon--arrow-right-2-bold"
-              class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
-              aria-hidden="true"/>
+        <Icon
+            name="iconamoon--arrow-right-2-bold"
+            class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
+            aria-hidden="true"
+        />
         <span class="text-sm md:text-base">11x hackathon winner</span>
     </li>
     <li class="flex items-start gap-3 pl-0 sm:pl-2">
-        <Icon name="iconamoon--arrow-right-2-bold"
-              class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
-              aria-hidden="true"/>
+        <Icon
+            name="iconamoon--arrow-right-2-bold"
+            class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
+            aria-hidden="true"
+        />
         <span class="text-sm md:text-base">Organized 3 hackathons</span>
     </li>
 </ul>
@@ -49,12 +62,15 @@ import button from "../assets/button/button.gif";
 <div class="mt-12">
     <h2 class="text-lg md:text-xl font-bold text-ctp-mauve">Guestbook</h2>
     <p class="pt-2 text-sm md:text-base leading-relaxed">
-        Feel free to leave a message in my <a href="/guestbook" class="text-ctp-mauve hover:underline font-medium">guestbook</a>.
+        Feel free to leave a message in my <a
+            href="/guestbook"
+            class="text-ctp-mauve hover:underline font-medium">guestbook</a
+        >.
     </p>
 </div>
 
 <div class="pt-16">
     <a href="https://aaronye.dev" target="_blank" rel="noreferrer noopener">
-        <img src={button.src} alt="Aaron's 88x31 button"/>
+        <img src={button.src} alt="Aaron's 88x31 button" />
     </a>
 </div>

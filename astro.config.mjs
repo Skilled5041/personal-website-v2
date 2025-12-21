@@ -1,6 +1,6 @@
 // @ts-check
-import {defineConfig} from "astro/config";
-import {visualizer} from "rollup-plugin-visualizer";
+import { defineConfig } from "astro/config";
+import { visualizer } from "rollup-plugin-visualizer";
 
 import tailwindcss from "@tailwindcss/vite";
 
@@ -13,13 +13,16 @@ import vercel from "@astrojs/vercel";
 import react from "@astrojs/react";
 
 export default defineConfig({
-  vite: {
-      plugins: [visualizer({
-          emitFile: true,
-          filename: "stats.html",
-      }), tailwindcss()]
-  },
+    vite: {
+        plugins: [
+            visualizer({
+                emitFile: true,
+                filename: "stats.html"
+            }),
+            tailwindcss()
+        ]
+    },
 
-  integrations: [svelte(), icon({iconDir: "src/assets/icons"}), react()],
-  adapter: vercel()
+    integrations: [svelte(), icon({ iconDir: "src/assets/icons" }), react()],
+    adapter: vercel()
 });

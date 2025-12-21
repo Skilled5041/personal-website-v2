@@ -24,4 +24,3 @@ export async function incrementVisitsCount(sql: Sql): Promise<IncrementVisitsCou
         countValue: row[2]
     };
 }
-

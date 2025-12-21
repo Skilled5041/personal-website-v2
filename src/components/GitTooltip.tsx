@@ -1,12 +1,13 @@
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
-import type {ReactNode} from "react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import type { ReactNode } from "react";
 
-export default function GitTooltip({children, commitDate}: { children: ReactNode, commitDate: string }) {
+export default function GitTooltip({
+    children,
+    commitDate
+}: {
+    children: ReactNode;
+    commitDate: string;
+}) {
     return (
         <TooltipProvider delayDuration={0}>
             <Tooltip>
@@ -19,5 +20,5 @@ export default function GitTooltip({children, commitDate}: { children: ReactNode
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>
-    )
+    );
 }

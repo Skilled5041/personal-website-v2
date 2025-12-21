@@ -1,20 +1,21 @@
-export const prerender = false
+export const prerender = false;
 
 export async function GET() {
-    const apiUrl = "https://api.github.com/repos/skilled5041/personal-website-v2/commits?per_page=1";
+    const apiUrl =
+        "https://api.github.com/repos/skilled5041/personal-website-v2/commits?per_page=1";
     const token = import.meta.env.GITHUB_TOKEN;
 
     const response = await fetch(apiUrl, {
         headers: {
-            "Accept": "application/vnd.github.v3+json",
-            ...(token && {"Authorization": `Bearer ${token}`})
+            Accept: "application/vnd.github.v3+json",
+            ...(token && { Authorization: `Bearer ${token}` })
         }
     });
 
     if (!response.ok) {
-        return new Response(JSON.stringify({error: "Failed to fetch commit data"}), {
+        return new Response(JSON.stringify({ error: "Failed to fetch commit data" }), {
             status: response.status,
-            headers: {"Content-Type": "application/json"}
+            headers: { "Content-Type": "application/json" }
         });
     }
 
@@ -23,7 +24,7 @@ export async function GET() {
     const commitUrl = data[0].html_url;
     const commitDate = data[0].commit.author.date;
 
-    return new Response(JSON.stringify({shortSha, commitUrl, commitDate}), {
-        headers: {"Content-Type": "application/json"}
+    return new Response(JSON.stringify({ shortSha, commitUrl, commitDate }), {
+        headers: { "Content-Type": "application/json" }
     });
 }

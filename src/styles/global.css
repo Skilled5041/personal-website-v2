@@ -4,8 +4,9 @@
 
 @plugin "tailwindcss-animate";
 
-html, body {
-    font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+html,
+body {
+    font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
 @theme inline {

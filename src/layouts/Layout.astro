@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import "@fontsource/instrument-sans"
+import "@fontsource/instrument-sans";
 import Footer from "../components/Footer.astro";
 import Snow from "../components/Snow.svelte";
 import TitleSection from "../components/TitleSection.astro";
@@ -8,19 +8,19 @@ import TitleSection from "../components/TitleSection.astro";
 
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width"/>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
-    <meta name="generator" content={Astro.generator}/>
-    <title>Aaron Ye</title>
-</head>
-<body class="min-h-screen flex flex-col justify-between bg-ctp-base text-ctp-text">
-<div>
-    <Snow client:only="svelte"/>
-    <TitleSection/>
-    <slot/>
-</div>
-<Footer/>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Aaron Ye</title>
+    </head>
+    <body class="min-h-screen flex flex-col justify-between bg-ctp-base text-ctp-text">
+        <div>
+            <Snow client:only="svelte" />
+            <TitleSection />
+            <slot />
+        </div>
+        <Footer />
+    </body>
 </html>
