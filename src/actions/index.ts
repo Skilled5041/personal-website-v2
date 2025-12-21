@@ -4,6 +4,7 @@ import { insertGuestbookEntry } from "@/lib/sqlc/guestbook_sql.ts";
 import { db } from "@/lib/database.ts";
 import { checkRateLimit } from "@/lib/rate-limit.ts";
 import DOMPurify from "isomorphic-dompurify";
+import { profanity } from "@2toad/profanity";
 
 // Rate limit config: 5 submissions per minute
 const RATE_LIMIT_CONFIG = {
@@ -51,6 +52,14 @@ export const server = {
             }
 
             const { name, message } = input;
+
+            // Check for profanity
+            if (profanity.exists(name) || profanity.exists(message)) {
+                throw new ActionError({
+                    code: "BAD_REQUEST",
+                    message: "Please avoid using offensive language in your submission.",
+                });
+            }
 
             // Sanitize inputs
             const sanitizedName = sanitize(name);

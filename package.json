@@ -10,6 +10,7 @@
         "format": "prettier . --write"
     },
     "dependencies": {
+        "@2toad/profanity": "^3.2.0",
         "@astrojs/react": "^4.4.2",
         "@astrojs/svelte": "^7.1.0",
         "@astrojs/vercel": "^8.0.4",
