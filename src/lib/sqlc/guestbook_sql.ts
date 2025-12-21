@@ -17,10 +17,7 @@ export interface InsertGuestbookEntryRow {
     createdAt: Date | null;
 }
 
-export async function insertGuestbookEntry(
-    sql: Sql,
-    args: InsertGuestbookEntryArgs
-): Promise<InsertGuestbookEntryRow | null> {
+export async function insertGuestbookEntry(sql: Sql, args: InsertGuestbookEntryArgs): Promise<InsertGuestbookEntryRow | null> {
     const rows = await sql.unsafe(insertGuestbookEntryQuery, [args.name, args.message]).values();
     if (rows.length !== 1) {
         return null;
@@ -51,18 +48,13 @@ export interface GetGuestbookEntriesPaginatedRow {
     createdAt: Date | null;
 }
 
-export async function getGuestbookEntriesPaginated(
-    sql: Sql,
-    args: GetGuestbookEntriesPaginatedArgs
-): Promise<GetGuestbookEntriesPaginatedRow[]> {
-    return (await sql.unsafe(getGuestbookEntriesPaginatedQuery, [args.offset]).values()).map(
-        (row) => ({
-            id: row[0],
-            name: row[1],
-            message: row[2],
-            createdAt: row[3]
-        })
-    );
+export async function getGuestbookEntriesPaginated(sql: Sql, args: GetGuestbookEntriesPaginatedArgs): Promise<GetGuestbookEntriesPaginatedRow[]> {
+    return (await sql.unsafe(getGuestbookEntriesPaginatedQuery, [args.offset]).values()).map(row => ({
+        id: row[0],
+        name: row[1],
+        message: row[2],
+        createdAt: row[3]
+    }));
 }
 
 export const countGuestbookEntriesQuery = `-- name: CountGuestbookEntries :one
@@ -83,3 +75,4 @@ export async function countGuestbookEntries(sql: Sql): Promise<CountGuestbookEnt
         count: row[0]
     };
 }
+

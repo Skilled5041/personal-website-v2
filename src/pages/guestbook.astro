@@ -442,6 +442,12 @@ const formatDate = (date: Date) => {
             return;
         }
 
+        if (result.error) {
+            formSuccess.textContent = "";
+            formError.textContent = result.error.message || "An unknown error occurred :(";
+            return;
+        }
+
         if (!result.data) {
             formSuccess.textContent = "";
             formError.textContent = "An unknown error occurred :(";
