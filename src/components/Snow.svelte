@@ -44,8 +44,8 @@
             count: 67,
             minRadius: 0.25,
             maxRadius: 0.3,
-            minSpeed: 0.5,
-            maxSpeed: 0.6,
+            minSpeed: 0.4,
+            maxSpeed: 0.5,
             minAngleDeg: 345,
             maxAngleDeg: 355,
             flakes: []
