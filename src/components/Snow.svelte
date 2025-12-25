@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {onDestroy, onMount} from "svelte";
+    import { onDestroy, onMount } from "svelte";
     import snowflakeSvg from "/src/assets/snowflake.svg";
     let enabled: boolean = true;
 
@@ -48,7 +48,7 @@
             maxSpeed: 0.5,
             minAngleDeg: 345,
             maxAngleDeg: 355,
-            flakes: []
+            flakes: [],
         },
         {
             baseCount: 67,
@@ -59,7 +59,7 @@
             maxSpeed: 0.6,
             minAngleDeg: 25,
             maxAngleDeg: 40,
-            flakes: []
+            flakes: [],
         },
         {
             baseCount: 100,
@@ -70,7 +70,7 @@
             maxSpeed: 0.8,
             minAngleDeg: 30,
             maxAngleDeg: 35,
-            flakes: []
+            flakes: [],
         },
     ];
 
@@ -88,7 +88,7 @@
 
     function updateCounts() {
         const sf = getScaleFactor();
-        layers.forEach(layer => {
+        layers.forEach((layer) => {
             layer.count = Math.max(5, Math.round(layer.baseCount * sf));
         });
     }
@@ -129,12 +129,16 @@
         adjustLayerFlakesForCount();
     }
 
-    function createSnowflake(layerIndex: number, startY = Math.random() * window.innerHeight): Snowflake {
+    function createSnowflake(
+        layerIndex: number,
+        startY = Math.random() * window.innerHeight,
+    ): Snowflake {
         const layer = layers[layerIndex];
         const radius = layer.minRadius + Math.random() * (layer.maxRadius - layer.minRadius);
         const fallSpeed = layer.minSpeed + Math.random() * (layer.maxSpeed - layer.minSpeed);
-        const angleDeg = layer.minAngleDeg + Math.random() * (layer.maxAngleDeg - layer.minAngleDeg);
-        const angleRad = angleDeg * Math.PI / 180;
+        const angleDeg =
+            layer.minAngleDeg + Math.random() * (layer.maxAngleDeg - layer.minAngleDeg);
+        const angleRad = (angleDeg * Math.PI) / 180;
         const drift = Math.sin(angleRad) * fallSpeed;
         const verticalSpeed = Math.cos(angleRad) * fallSpeed;
         return {
@@ -143,7 +147,7 @@
             radius,
             fallSpeed: verticalSpeed,
             drift,
-            layer: layerIndex
+            layer: layerIndex,
         };
     }
 
@@ -151,7 +155,7 @@
         updateCounts();
         for (let i = 0; i < layers.length; i++) {
             const layer = layers[i];
-            layer.flakes = Array.from({length: layer.count}, () => createSnowflake(i));
+            layer.flakes = Array.from({ length: layer.count }, () => createSnowflake(i));
         }
     }
 
@@ -172,21 +176,29 @@
         context.restore();
 
         // Draw and update settled flakes (fading out)
-        settledFlakes = settledFlakes.filter(flake => {
+        settledFlakes = settledFlakes.filter((flake) => {
             flake.fadeElapsed = (flake.fadeElapsed || 0) + (ts ? 16 : 16);
             let alpha = Math.max(0, 0.4 * (1 - (flake.fadeElapsed || 0) / FADE_DURATION));
             context.save();
             context.globalAlpha = alpha;
             context.translate(flake.x, flake.y);
             context.filter = "brightness(0) invert(1)";
-            context.drawImage(snowflakeImg, -flake.radius * 12, -flake.radius * 12, flake.radius * 24, flake.radius * 24);
+            context.drawImage(
+                snowflakeImg,
+                -flake.radius * 12,
+                -flake.radius * 12,
+                flake.radius * 24,
+                flake.radius * 24,
+            );
             context.restore();
             return (flake.fadeElapsed || 0) < FADE_DURATION;
         });
 
         layers.forEach((layer) => {
             // Remove off-screen flakes
-            layer.flakes = layer.flakes.filter(flake => flake.y < window.innerHeight + flake.radius * 24);
+            layer.flakes = layer.flakes.filter(
+                (flake) => flake.y < window.innerHeight + flake.radius * 24,
+            );
             // Add new flakes to maintain count
             while (layer.flakes.length < layer.count) {
                 layer.flakes.push(createSnowflake(layer.flakes[0]?.layer ?? 0, -5));
@@ -197,7 +209,13 @@
                 context.globalAlpha = 0.4;
                 context.translate(flake.x, flake.y);
                 context.filter = "brightness(0) invert(1)";
-                context.drawImage(snowflakeImg, -flake.radius * 12, -flake.radius * 12, flake.radius * 24, flake.radius * 24);
+                context.drawImage(
+                    snowflakeImg,
+                    -flake.radius * 12,
+                    -flake.radius * 12,
+                    flake.radius * 24,
+                    flake.radius * 24,
+                );
                 context.restore();
 
                 flake.y += flake.fallSpeed;
@@ -208,7 +226,7 @@
                 if (pileX >= 0 && pileX < snowPile.length) {
                     if (flake.y + flake.radius * 12 >= snowPile[pileX]) {
                         // Move to settledFlakes for fading
-                        settledFlakes.push({...flake, isSettled: true, fadeElapsed: 0});
+                        settledFlakes.push({ ...flake, isSettled: true, fadeElapsed: 0 });
                         // Raise the pile based on flake size
                         for (let dx = -flake.radius * 6; dx <= flake.radius * 6; dx++) {
                             const px = pileX + dx;
@@ -290,8 +308,5 @@
 </script>
 
 {#if enabled}
-    <canvas
-            bind:this={canvas}
-            class="fixed inset-0 pointer-events-none z-[999999]"
-    ></canvas>
+    <canvas bind:this={canvas} class="fixed inset-0 pointer-events-none z-[999999]"></canvas>
 {/if}
