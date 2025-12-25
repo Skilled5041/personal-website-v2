@@ -4,6 +4,8 @@ import "@fontsource/instrument-sans";
 import Footer from "../components/Footer.astro";
 import Snow from "../components/Snow.svelte";
 import TitleSection from "../components/TitleSection.astro";
+
+const env = import.meta.env.PUBLIC_ENV as string;
 ---
 
 <!doctype html>
@@ -14,6 +16,15 @@ import TitleSection from "../components/TitleSection.astro";
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
         <title>Aaron Ye</title>
+        {
+            env === "PROD" && (
+                <script
+                    defer
+                    src="https://cloud.umami.is/script.js"
+                    data-website-id="b38508b6-617a-47cf-9743-2bf62ecdca50"
+                />
+            )
+        }
     </head>
     <body class="bg-ctp-base text-ctp-text">
         <div class="flex flex-col justify-between min-h-screen">
