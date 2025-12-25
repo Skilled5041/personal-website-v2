@@ -2,6 +2,12 @@
 import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
+import dimeDefenderImg from "../assets/projects/dime-defender.jpg";
+import eurekaHacksImg from "../assets/projects/eureka-hacks-2025.png";
+import mrGooseImg from "../assets/projects/mr-goose.png";
+import igniteAiImg from "../assets/projects/ignite-ai.png";
+import gdtrisImg from "../assets/projects/gdtris.png";
+import { ImageMetadata } from "astro";
 
 interface Project {
     title: string;
@@ -9,7 +15,7 @@ interface Project {
     tech: string[];
     github?: string;
     live?: string;
-    image: string;
+    image: ImageMetadata;
 }
 
 const projects: Project[] = [
@@ -20,7 +26,7 @@ const projects: Project[] = [
         tech: ["Plasmo", "JavaScript", "Svelte"],
         github: "https://github.com/aryanp05/hackthenorth24",
         live: "https://devpost.com/software/budget-defender",
-        image: "/src/assets/projects/dime-defender.jpg",
+        image: dimeDefenderImg,
     },
     {
         title: "EurekaHACKS 2025 Website",
@@ -29,7 +35,7 @@ const projects: Project[] = [
         tech: ["TypeScript", "Next.js", "PostgreSQL", "AWS"],
         github: "https://github.com/EurekaHackathon/EurekaHACKS-2025",
         live: "https://2025.eurekahacks.ca/",
-        image: "/src/assets/projects/eureka-hacks-2025.png",
+        image: eurekaHacksImg,
     },
     {
         title: "Mr. Goose",
@@ -37,7 +43,7 @@ const projects: Project[] = [
             "An AI-powered VSCode extension that assists beginners with coding while still encouraging learning through problem-solving. First place and best developer tool @ JAMHacks 2025.",
         tech: ["TypeScript", "VSCode Extension", "Elysia.js"],
         github: "https://github.com/Skilled5041/jamhacks-2025",
-        image: "/src/assets/projects/mr-goose.png",
+        image: mrGooseImg,
     },
     {
         title: "Ignite AI",
@@ -46,7 +52,7 @@ const projects: Project[] = [
         tech: ["SvelteKit", "PocketBase"],
         github: "https://github.com/danielp1218/IgniteAI",
         live: "https://igniteai.vercel.app/",
-        image: "/src/assets/projects/ignite-ai.png",
+        image: igniteAiImg,
     },
     {
         title: "GDTris",
@@ -54,7 +60,7 @@ const projects: Project[] = [
         tech: ["Godot", "GDScript"],
         github: "https://github.com/Skilled5041/gdtris",
         live: "https://skilled5041.github.io/gdtris/",
-        image: "/src/assets/projects/gdtris.png",
+        image: gdtrisImg,
     },
 ];
 ---
