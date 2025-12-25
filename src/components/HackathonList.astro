@@ -1,0 +1,131 @@
+---
+import { Icon } from "astro-icon/components";
+import htn2025Logo from "../assets/logos/htn2025.svg";
+import htn2024Logo from "../assets/logos/htn2024.png";
+import jamhacksLogo from "../assets/logos/jamhacks.png";
+import nsbehacks2025Logo from "../assets/logos/nsbe2025.png";
+import htv2024 from "../assets/logos/htv2024.png";
+import stemist from "../assets/logos/stemist.png";
+import apocalypse from "../assets/logos/apocalypse.png";
+import eurekahacksLogo from "../assets/logos/eurekahacks2024.png";
+import alicehacksLogo from "../assets/logos/alicehacks.png";
+import focushacksLogo from "../assets/logos/focushacks.png";
+import { Image } from "astro:assets";
+
+const hackathons = [
+  {
+    name: "Hack the North 2025",
+    logo: htn2025Logo,
+    link: "https://hackthenorth.com/",
+    result: "Finalist",
+  },
+  {
+    name: "JAMHacks 2025",
+    logo: jamhacksLogo,
+    link: "https://jamhacks.ca/",
+    result: "1st Place Overall + Best Developer Tool",
+  },
+  {
+    name: "NSBEHacks 2025",
+    logo: nsbehacks2025Logo,
+    link: "https://nsbehacksuoft.ca/",
+    result: "2nd Place Overall + 3rd Place BFN Challenge",
+  },
+  {
+    name: "Hack the Valley 2024",
+    logo: htv2024,
+    link: "https://hackthevalley.io/",
+    result: "ICP Award",
+  },
+  {
+    name: "Hack the North 2024",
+    logo: htn2024Logo,
+    link: "https://2024.hackthenorth.com/",
+    result: "Finalist",
+  },
+  {
+    name: "STEMist Hacks 2024",
+    logo: stemist,
+    link: "https://www.joinstemist.org/",
+    result: "First Place",
+  },
+  {
+    name: "Apocalypse 2024",
+    logo: apocalypse,
+    link: "https://apocalypse.hackclub.com/",
+    result: "Top 7",
+  },
+  {
+    name: "EurekaHACKS 2024",
+    logo: eurekahacksLogo,
+    link: "https://2024.eurekahacks.ca/",
+    result: "First Place",
+  },
+  {
+    name: "FOCUS Hacks 2024",
+    logo: focushacksLogo,
+    link: "https://www.focusyouthorg.ca/focus-hacks",
+    result: "First Place",
+  },
+  {
+    name: "NSBEHacks 2024",
+    logo: nsbehacks2025Logo,
+    link: "https://nsbehacksuoft.ca/",
+    result: "Honourable Mention (Top 4)",
+  },
+  {
+    name: "AliceHacks 2023",
+    logo: alicehacksLogo,
+    link: "https://alicehacks.devpost.com/",
+    result: "Best Beginner Hack",
+  },
+];
+---
+
+<li class="flex items-start gap-3 pl-0 sm:pl-2">
+    <Icon
+        name="iconamoon--arrow-right-2-bold"
+        class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
+        aria-hidden="true"
+    />
+    <details class="text-sm md:text-base group" id="hackathon-details">
+        <summary
+            class="cursor-pointer select-none font-medium text-ctp-text flex items-center gap-1"
+        >
+            <span>11x hackathon winner</span>
+            <span
+                id="hackathon-arrow"
+                class="transition-transform duration-200 group-open:rotate-180"
+            >
+                <Icon name="iconamoon--arrow-down-2" class="w-4 h-4" aria-hidden="true" />
+            </span>
+        </summary>
+        <ul id="hackathon-list" class="pl-4 mt-1 space-y-1 text-sm">
+            {hackathons.map(h => (
+                <li class="flex items-start gap-2">
+                    <Icon
+                        name="mage--l-arrow-down-right"
+                        class="w-3 h-3 text-ctp-mauve-100 mt-1 flex-shrink-0"
+                        aria-hidden="true"
+                    />
+                    <span class="flex items-center">
+                        <span class="inline-block">
+                            <Image
+                                src={h.logo}
+                                alt={`${h.name} Logo`}
+                                loading="eager"
+                                class="h-4 w-auto mr-1"
+                            />
+                        </span>
+                        <a
+                            href={h.link}
+                            class="underline duration-200 hover:decoration-ctp-subtext0 decoration-ctp-surface2 font-medium inline-flex items-center gap-1"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >{h.name}</a>&nbsp;• {h.result}
+                    </span>
+                </li>
+            ))}
+        </ul>
+    </details>
+</li>
