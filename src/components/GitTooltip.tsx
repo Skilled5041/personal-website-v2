@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 export default function GitTooltip({
     children,
-    commitDate
+    commitDate,
 }: {
     children: ReactNode;
     commitDate: string;

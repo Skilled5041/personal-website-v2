@@ -17,12 +17,12 @@ export default defineConfig({
         plugins: [
             visualizer({
                 emitFile: true,
-                filename: "stats.html"
+                filename: "stats.html",
             }),
-            tailwindcss()
-        ]
+            tailwindcss(),
+        ],
     },
 
     integrations: [svelte(), icon({ iconDir: "src/assets/icons" }), react()],
-    adapter: vercel()
+    adapter: vercel(),
 });

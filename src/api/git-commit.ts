@@ -8,14 +8,14 @@ export async function GET() {
     const response = await fetch(apiUrl, {
         headers: {
             Accept: "application/vnd.github.v3+json",
-            ...(token && { Authorization: `Bearer ${token}` })
-        }
+            ...(token && { Authorization: `Bearer ${token}` }),
+        },
     });
 
     if (!response.ok) {
         return new Response(JSON.stringify({ error: "Failed to fetch commit data" }), {
             status: response.status,
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
         });
     }
 
@@ -25,6 +25,6 @@ export async function GET() {
     const commitDate = data[0].commit.author.date;
 
     return new Response(JSON.stringify({ shortSha, commitUrl, commitDate }), {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
     });
 }
