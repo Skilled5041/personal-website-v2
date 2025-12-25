@@ -1,5 +1,6 @@
 <script lang="ts">
     export let currentPath: string = "/";
+    console.log("Current Path:", currentPath);
 </script>
 <div class="flex gap-6">
     <a class="font-medium hover:text-ctp-mauve-100 duration-200" class:text-ctp-mauve={currentPath === '/'}
