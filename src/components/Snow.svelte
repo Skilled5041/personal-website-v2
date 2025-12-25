@@ -1,6 +1,6 @@
 <script lang="ts">
     import {onDestroy, onMount} from "svelte";
-
+    import snowflakeSvg from "/src/assets/snowflake.svg";
     let enabled: boolean = true;
 
     let canvas: HTMLCanvasElement;
@@ -240,7 +240,7 @@
         window.addEventListener("resize", resizeCanvas);
 
         snowflakeImg = new window.Image();
-        snowflakeImg.src = "/src/assets/snowflake.svg";
+        snowflakeImg.src = snowflakeSvg.src;
         snowflakeImg.onload = () => {
             resizeCanvas();
             initializeLayers();
