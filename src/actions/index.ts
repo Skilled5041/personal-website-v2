@@ -3,7 +3,7 @@ import { z } from "astro/zod";
 import { insertGuestbookEntry } from "@/lib/sqlc/guestbook_sql.ts";
 import { db } from "@/lib/database.ts";
 import { checkRateLimit } from "@/lib/rate-limit.ts";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import { profanity } from "@2toad/profanity";
 
 // Rate limit config: 5 submissions per minute
@@ -12,9 +12,13 @@ const RATE_LIMIT_CONFIG = {
     maxRequests: 3,
 };
 
-// Sanitize user input - strip all HTML tags
+// Sanitize user input - escape HTML entities
 function sanitize(input: string): string {
-    return DOMPurify.sanitize(input, { ALLOWED_TAGS: [] }).trim();
+    return sanitizeHtml(input, {
+        allowedTags: [],
+        allowedAttributes: {},
+        disallowedTagsMode: "escape",
+    }).trim();
 }
 
 export const server = {

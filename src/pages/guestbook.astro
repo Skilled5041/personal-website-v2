@@ -4,7 +4,7 @@ import { getGuestbookEntriesPaginated, countGuestbookEntries } from "@/lib/sqlc/
 import { db } from "@/lib/database";
 import Layout from "../layouts/Layout.astro";
 import loadingIcon from "../assets/icons/eos-icons--loading.svg";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 
 const ENTRIES_PER_PAGE = 10;
 
@@ -81,7 +81,7 @@ const formatDate = (date: Date) => {
 
 // Sanitize HTML and convert newlines to <br> for safe rendering
 const formatMessage = (message: string) => {
-    const sanitized = DOMPurify.sanitize(message, { ALLOWED_TAGS: [] });
+    const sanitized = sanitizeHtml(message, { allowedTags: [], allowedAttributes: {} });
     return sanitized.replace(/\n/g, "<br>");
 };
 ---
@@ -151,12 +151,7 @@ const formatMessage = (message: string) => {
                     <div class="flex items-center gap-1" data-paginator>
                         <a
                             href={page > 1 ? `?page=${page - 1}` : undefined}
-                            class:list={[
-                                "px-2 py-1 rounded text-sm",
-                                page === 1
-                                    ? "text-ctp-overlay0 cursor-not-allowed"
-                                    : "text-ctp-text hover:bg-ctp-surface0 duration-200",
-                            ]}
+                            class={`px-2 py-1 rounded text-sm ${page === 1 ? "text-ctp-overlay0 cursor-not-allowed" : "text-ctp-text hover:bg-ctp-surface0 duration-200"}`}
                             aria-disabled={page === 1}
                         >
                             ←
@@ -167,12 +162,7 @@ const formatMessage = (message: string) => {
                             ) : (
                                 <a
                                     href={`?page=${p}`}
-                                    class:list={[
-                                        "px-2 py-1 rounded text-sm duration-200",
-                                        p === page
-                                            ? "bg-ctp-mauve text-ctp-base font-semibold"
-                                            : "text-ctp-text hover:bg-ctp-surface0",
-                                    ]}
+                                    class={`px-2 py-1 rounded text-sm duration-200 ${p === page ? "bg-ctp-mauve text-ctp-base font-semibold" : "text-ctp-text hover:bg-ctp-surface0"}`}
                                 >
                                     {p}
                                 </a>
@@ -180,12 +170,7 @@ const formatMessage = (message: string) => {
                         )}
                         <a
                             href={page < totalPages ? `?page=${page + 1}` : undefined}
-                            class:list={[
-                                "px-2 py-1 rounded text-sm",
-                                page === totalPages
-                                    ? "text-ctp-overlay0 cursor-not-allowed"
-                                    : "text-ctp-text hover:bg-ctp-surface0 duration-200",
-                            ]}
+                            class={`px-2 py-1 rounded text-sm ${page === totalPages ? "text-ctp-overlay0 cursor-not-allowed" : "text-ctp-text hover:bg-ctp-surface0 duration-200"}`}
                             aria-disabled={page === totalPages}
                         >
                             →
@@ -229,12 +214,7 @@ const formatMessage = (message: string) => {
                     <div class="flex items-center gap-1" data-paginator>
                         <a
                             href={page > 1 ? `?page=${page - 1}` : undefined}
-                            class:list={[
-                                "px-2 py-1 rounded text-sm",
-                                page === 1
-                                    ? "text-ctp-overlay0 cursor-not-allowed"
-                                    : "text-ctp-text hover:bg-ctp-surface0 duration-200",
-                            ]}
+                            class={`px-2 py-1 rounded text-sm ${page === 1 ? "text-ctp-overlay0 cursor-not-allowed" : "text-ctp-text hover:bg-ctp-surface0 duration-200"}`}
                             aria-disabled={page === 1}
                         >
                             ←
@@ -245,12 +225,7 @@ const formatMessage = (message: string) => {
                             ) : (
                                 <a
                                     href={`?page=${p}`}
-                                    class:list={[
-                                        "px-2 py-1 rounded text-sm duration-200",
-                                        p === page
-                                            ? "bg-ctp-mauve text-ctp-base font-semibold"
-                                            : "text-ctp-text hover:bg-ctp-surface0",
-                                    ]}
+                                    class={`px-2 py-1 rounded text-sm duration-200 ${p === page ? "bg-ctp-mauve text-ctp-base font-semibold" : "text-ctp-text hover:bg-ctp-surface0"}`}
                                 >
                                     {p}
                                 </a>
@@ -258,12 +233,7 @@ const formatMessage = (message: string) => {
                         )}
                         <a
                             href={page < totalPages ? `?page=${page + 1}` : undefined}
-                            class:list={[
-                                "px-2 py-1 rounded text-sm",
-                                page === totalPages
-                                    ? "text-ctp-overlay0 cursor-not-allowed"
-                                    : "text-ctp-text hover:bg-ctp-surface0 duration-200",
-                            ]}
+                            class={`px-2 py-1 rounded text-sm ${page === totalPages ? "text-ctp-overlay0 cursor-not-allowed" : "text-ctp-text hover:bg-ctp-surface0 duration-200"}`}
                             aria-disabled={page === totalPages}
                         >
                             →
@@ -277,7 +247,13 @@ const formatMessage = (message: string) => {
 
 <script>
     import { actions, isInputError } from "astro:actions";
-    import DOMPurify from "dompurify";
+
+    // Simple HTML escape function for client-side sanitization
+    function escapeHtml(text: string): string {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
     const form = document.getElementById("guestbook-form") as HTMLFormElement;
     const formError = document.getElementById("form-error") as HTMLParagraphElement;
@@ -298,8 +274,7 @@ const formatMessage = (message: string) => {
 
     // Sanitize HTML and optionally convert newlines to <br>
     function sanitize(text: string, preserveNewlines = false): string {
-        // First sanitize with DOMPurify (allows no tags by default when we pass text)
-        let sanitized = DOMPurify.sanitize(text, { ALLOWED_TAGS: [] });
+        let sanitized = escapeHtml(text);
 
         if (preserveNewlines) {
             sanitized = sanitized.replace(/\n/g, "<br>");
@@ -496,16 +471,62 @@ const formatMessage = (message: string) => {
                 emptyState.remove();
             }
 
-            const newEntry = document.createElement("div");
-            newEntry.className = "bg-ctp-mantle rounded p-4";
-            newEntry.innerHTML = `
-                <div class="flex justify-between">
-                    <h1 class="font-semibold">${sanitize(result.data.name)}</h1>
-                    <h1>${result.data.createdAt ? new Date(result.data.createdAt).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: false }) : ""}</h1>
-                </div>
-                <p class="pt-4">${sanitize(result.data.message, true)}</p>
-            `;
-            entriesContainer.prepend(newEntry);
+            // Helper to decode HTML entities (server-side escaped) safely
+            function decodeEntities(encodedString: string): string {
+                const textarea = document.createElement("textarea");
+                textarea.innerHTML = encodedString || "";
+                return textarea.value;
+            }
+
+            // Helper to create a paragraph element with preserved newlines
+            function createMessageParagraph(serverMessage: string): HTMLParagraphElement {
+                const p = document.createElement("p");
+                p.className = "pt-4";
+
+                if (!serverMessage) return p;
+
+                const parts = serverMessage.split("\n");
+                parts.forEach((part: string, idx: number) => {
+                    const decoded = decodeEntities(part);
+                    p.appendChild(document.createTextNode(decoded));
+                    if (idx < parts.length - 1) p.appendChild(document.createElement("br"));
+                });
+
+                return p;
+            }
+
+            const entryWrapper = document.createElement("div");
+            entryWrapper.className = "bg-ctp-mantle rounded p-4";
+
+            const header = document.createElement("div");
+            header.className = "flex justify-between";
+
+            const nameEl = document.createElement("h1");
+            nameEl.className = "font-semibold";
+            nameEl.textContent = decodeEntities(result.data.name || "");
+
+            const dateEl = document.createElement("h1");
+            dateEl.innerText = result.data.createdAt
+                ? new Date(result.data.createdAt).toLocaleString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      second: "numeric",
+                      hour12: false,
+                  })
+                : "";
+
+            header.appendChild(nameEl);
+            header.appendChild(dateEl);
+
+            const messageEl = createMessageParagraph(result.data.message || "");
+
+            entryWrapper.appendChild(header);
+            entryWrapper.appendChild(messageEl);
+
+            entriesContainer.prepend(entryWrapper);
 
             // Remove the last entry if there are more than ENTRIES_PER_PAGE items
             const entries = entriesContainer.children;
