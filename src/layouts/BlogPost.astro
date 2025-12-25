@@ -1,0 +1,166 @@
+---
+import Layout from "./Layout.astro";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+    frontmatter: {
+        title: string;
+        pubDate: string;
+        description: string;
+        image?: {
+            url: string;
+            alt: string;
+        };
+        tags?: string[];
+    };
+}
+
+const { frontmatter } = Astro.props;
+
+const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    }).format(date);
+};
+---
+
+<Layout>
+    <article class="pt-12">
+        <a
+            href="/writing"
+            class="inline-flex items-center gap-2 text-sm text-ctp-subtext0 hover:text-ctp-mauve transition-colors duration-200 mb-8"
+        >
+            <Icon
+                name="iconamoon--arrow-right-2-bold"
+                class="w-4 h-4 rotate-180 translate-y-0.5"
+                aria-hidden="true"
+            />
+            Back to writing
+        </a>
+
+        <header class="mb-8">
+            <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-ctp-mauve leading-tight">
+                {frontmatter.title}
+            </h1>
+            <div class="mt-4 flex flex-wrap items-center gap-4 text-sm text-ctp-subtext0">
+                <time datetime={frontmatter.pubDate}>
+                    {formatDate(new Date(frontmatter.pubDate))}
+                </time>
+            </div>
+            {
+                frontmatter.tags && (
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        {frontmatter.tags.map((tag: string) => (
+                            <span class="bg-ctp-surface0 px-2 py-1 rounded text-xs text-ctp-subtext1">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                )
+            }
+        </header>
+
+        {
+            frontmatter.image && (
+                <img
+                    src={frontmatter.image.url}
+                    alt={frontmatter.image.alt}
+                    class="w-full rounded-lg mb-8"
+                />
+            )
+        }
+
+        <div class="prose">
+            <slot />
+        </div>
+    </article>
+</Layout>
+
+<style>
+    /* Prose styling for Markdown content */
+    .prose {
+        @reference text-ctp-text leading-relaxed;
+    }
+
+    .prose :global(h1) {
+        @reference text-2xl font-bold text-ctp-mauve mt-8 mb-4;
+    }
+
+    .prose :global(h2) {
+        @reference text-xl font-bold text-ctp-mauve mt-8 mb-4;
+    }
+
+    .prose :global(h3) {
+        @reference text-lg font-bold text-ctp-mauve mt-6 mb-3;
+    }
+
+    .prose :global(h4) {
+        @reference text-base font-bold text-ctp-mauve mt-4 mb-2;
+    }
+
+    .prose :global(p) {
+        @reference mb-4 text-sm md:text-base;
+    }
+
+    .prose :global(a) {
+        @reference text-ctp-mauve hover:underline;
+    }
+
+    .prose :global(strong) {
+        @reference font-bold text-ctp-text;
+    }
+
+    .prose :global(em) {
+        @reference italic;
+    }
+
+    .prose :global(ul) {
+        @reference list-disc list-inside mb-4 space-y-1 text-sm md:text-base;
+    }
+
+    .prose :global(ol) {
+        @reference list-decimal list-inside mb-4 space-y-1 text-sm md:text-base;
+    }
+
+    .prose :global(li) {
+        @reference text-ctp-text;
+    }
+
+    .prose :global(blockquote) {
+        @reference border-l-4 border-ctp-mauve pl-4 italic text-ctp-subtext0 my-4;
+    }
+
+    .prose :global(code) {
+        @reference bg-ctp-surface0 px-1.5 py-0.5 rounded text-sm text-ctp-mauve font-mono;
+    }
+
+    .prose :global(pre) {
+        @reference bg-ctp-mantle p-4 rounded-lg overflow-x-auto my-4;
+    }
+
+    .prose :global(pre code) {
+        @reference bg-transparent p-0 text-ctp-text;
+    }
+
+    .prose :global(hr) {
+        @reference border-ctp-surface0 my-8;
+    }
+
+    .prose :global(img) {
+        @reference rounded-lg my-4;
+    }
+
+    .prose :global(table) {
+        @reference w-full my-4 text-sm;
+    }
+
+    .prose :global(th) {
+        @reference bg-ctp-surface0 px-4 py-2 text-left font-semibold text-ctp-text;
+    }
+
+    .prose :global(td) {
+        @reference border-t border-ctp-surface0 px-4 py-2;
+    }
+</style>
