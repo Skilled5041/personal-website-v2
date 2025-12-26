@@ -124,14 +124,17 @@
 
         context.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        // Ensure snowPile matches new width
-        if (!snowPile.length || snowPile.length !== Math.ceil(window.innerWidth)) {
-            snowPile = Array(Math.ceil(window.innerWidth)).fill(window.innerHeight);
-        }
+        // Always reset snowPile to match new width/height
+        snowPile = Array(Math.ceil(window.innerWidth)).fill(window.innerHeight);
+        // Clear settledFlakes so no flakes are stuck at the old height
+        settledFlakes = [];
 
         // Update counts based on new size and adjust flakes arrays to match
         updateCounts();
         adjustLayerFlakesForCount();
+
+        // Clear the canvas and force a redraw
+        context.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     function createSnowflake(

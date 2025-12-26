@@ -4,6 +4,10 @@
 
 @plugin "tailwindcss-animate";
 
+:root {
+    background: var(--catppuccin-color-base);
+}
+
 html,
 body {
     font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
