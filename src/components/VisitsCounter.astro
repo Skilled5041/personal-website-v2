@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { POST } from "../api/increment-visits-count";
 import VisitsCounterTooltip from "./VisitsCounterTooltip";
-
+export const prerender = false;
 let visitsCounterData = { countValue: "unknown" };
 if (import.meta.env.PUBLIC_ENV !== "DEV") {
     const visitsCounterResponse = await POST();
