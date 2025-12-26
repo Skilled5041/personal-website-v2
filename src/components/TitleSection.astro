@@ -7,13 +7,22 @@ const currentPath = Astro.url.pathname;
 <div
     class="pt-12 flex flex-col gap-2 sm:gap-0 items-start pb-2 sm:pb-0 sm:flex-row justify-between sm:items-end"
 >
-    <div>
-        <a href="/" class="text-2xl md:text-3xl lg:text-4xl font-bold text-ctp-mauve">Aaron Ye</a>
-        <h2 class="sm:pt-2 pb-2 text-base md:text-lg">Mathematics @ UWaterloo</h2>
+    <div class="flex justify-between w-full">
+        <div>
+            <a href="/" class="text-2xl md:text-3xl lg:text-4xl font-bold text-ctp-mauve"
+                >Aaron Ye</a
+            >
+            <h2 class="sm:pt-2 pb-2 text-base md:text-lg">Mathematics @ UWaterloo</h2>
+        </div>
+        <div class="sm:hidden">
+            <Contacts />
+        </div>
     </div>
     <nav class="flex flex-col gap-1.5 sm:gap-3 pb-1 sm:pb-3">
         <NavLinks currentPath={currentPath} client:load />
-        <Contacts />
+        <div class="hidden sm:block">
+            <Contacts />
+        </div>
     </nav>
 </div>
 <hr class="border-1 text-ctp-subtext0" />
