@@ -30,6 +30,7 @@
         minAngleDeg: number;
         maxAngleDeg: number;
         flakes: Snowflake[];
+        alpha: number;
     };
 
     // Base area: assume original design was for 1920x1080 (adjustable). If your original target was different,
@@ -44,33 +45,36 @@
             count: 67,
             minRadius: 0.25,
             maxRadius: 0.3,
-            minSpeed: 0.4,
-            maxSpeed: 0.5,
+            minSpeed: 60, // scaled for time-based animation
+            maxSpeed: 70,
             minAngleDeg: 345,
             maxAngleDeg: 355,
             flakes: [],
+            alpha: 0.35,
         },
         {
             baseCount: 67,
             count: 67,
             minRadius: 0.25,
             maxRadius: 0.3,
-            minSpeed: 0.5,
-            maxSpeed: 0.6,
+            minSpeed: 60,
+            maxSpeed: 70,
             minAngleDeg: 25,
             maxAngleDeg: 40,
             flakes: [],
+            alpha: 0.35,
         },
         {
             baseCount: 100,
             count: 100,
             minRadius: 0.45,
             maxRadius: 0.5,
-            minSpeed: 0.7,
-            maxSpeed: 0.8,
+            minSpeed: 80,
+            maxSpeed: 90,
             minAngleDeg: 30,
             maxAngleDeg: 35,
             flakes: [],
+            alpha: 0.5,
         },
     ];
 
@@ -159,7 +163,13 @@
         }
     }
 
+    let lastTimestamp = performance.now();
+
     function drawFrame(ts?: number) {
+        const now = ts ?? performance.now();
+        const delta = Math.min((now - lastTimestamp) / 1000, 0.1); // seconds, clamp to avoid huge jumps
+        lastTimestamp = now;
+
         context.clearRect(0, 0, canvas.width, canvas.height);
         if (!snowPile.length || snowPile.length !== Math.ceil(window.innerWidth)) {
             snowPile = Array(Math.ceil(window.innerWidth)).fill(window.innerHeight);
@@ -177,7 +187,7 @@
 
         // Draw and update settled flakes (fading out)
         settledFlakes = settledFlakes.filter((flake) => {
-            flake.fadeElapsed = (flake.fadeElapsed || 0) + (ts ? 16 : 16);
+            flake.fadeElapsed = (flake.fadeElapsed || 0) + (delta * 1000); // ms
             let alpha = Math.max(0, 0.4 * (1 - (flake.fadeElapsed || 0) / FADE_DURATION));
             context.save();
             context.globalAlpha = alpha;
@@ -206,7 +216,7 @@
             // Animate/draw falling flakes
             layer.flakes.forEach((flake, i) => {
                 context.save();
-                context.globalAlpha = 0.4;
+                context.globalAlpha = layer.alpha; // Use layer alpha
                 context.translate(flake.x, flake.y);
                 context.filter = "brightness(0) invert(1)";
                 context.drawImage(
@@ -218,8 +228,8 @@
                 );
                 context.restore();
 
-                flake.y += flake.fallSpeed;
-                flake.x += flake.drift;
+                flake.y += flake.fallSpeed * delta;
+                flake.x += flake.drift * delta;
 
                 // Pile up logic
                 const pileX = Math.round(flake.x);
@@ -257,7 +267,7 @@
         context = canvas.getContext("2d")!;
         window.addEventListener("resize", resizeCanvas);
 
-        snowflakeImg = new window.Image();
+        snowflakeImg = new Image();
         snowflakeImg.src = snowflakeSvg.src;
         snowflakeImg.onload = () => {
             resizeCanvas();
