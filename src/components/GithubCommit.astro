@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import { GET } from "../api/git-commit";
+import { GET } from "../pages/api/git-commit.ts";
 import GitTooltip from "./GitTooltip";
 
 const githubCommitResponse = await GET();
