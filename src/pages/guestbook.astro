@@ -98,7 +98,7 @@ const formatMessage = (message: string) => {
             Leave a message!
         </h1>
     </div>
-    <form id="guestbook-form" class="mt-4">
+    <form id="guestbook-form" class="mt-4" aria-label="Guestbook form">
         <div class="flex flex-col">
             <label for="guestbookName">Name: <span class="text-ctp-red">*</span></label>
             <input
@@ -108,6 +108,7 @@ const formatMessage = (message: string) => {
                 name="name"
                 placeholder="Your Name"
                 required
+                aria-label="Name"
             />
         </div>
         <div class="flex flex-col pt-4">
@@ -117,12 +118,14 @@ const formatMessage = (message: string) => {
                 id="guestbookMessage"
                 name="message"
                 placeholder="Leave a message..."
-                required></textarea>
+                required
+                aria-label="Message"></textarea>
         </div>
         <button
             id="submit-button"
             class="rounded text-ctp-base font-semibold hover:bg-ctp-mauve-300 duration-200 cursor-pointer p-1 w-24 bg-ctp-mauve mt-6 flex items-center justify-center"
             type="submit"
+            aria-label="Submit guestbook entry"
         >
             <span id="submit-text">Submit</span>
             <img
@@ -132,43 +135,70 @@ const formatMessage = (message: string) => {
                 height="24"
                 src={loadingIcon.src}
                 alt="Loading..."
+                aria-label="Loading indicator"
             />
         </button>
         <div class="flex flex-row">
-            <p id="form-error" class="pt-2 h-4 text-ctp-red"></p>
-            <p id="form-success" class="pt-2 h-4 text-ctp-green"></p>
+            <p
+                id="form-error"
+                class="pt-2 h-4 text-ctp-red"
+                aria-live="polite"
+                aria-label="Form error message"
+            >
+            </p>
+            <p
+                id="form-success"
+                class="pt-2 h-4 text-ctp-green"
+                aria-live="polite"
+                aria-label="Form success message"
+            >
+            </p>
         </div>
     </form>
 
     <!-- Page info and mini paginator -->
     {
         totalEntries > 0 && (
-            <div class="flex justify-between items-center pt-12" data-pagination-container>
+            <div
+                class="flex justify-between items-center pt-12"
+                data-pagination-container
+                aria-label="Pagination navigation"
+            >
                 <p
                     class="text-ctp-subtext0"
                     data-page-info
                     data-total-entries={totalEntries}
                     data-total-pages={totalPages}
+                    aria-label="Page and message count"
                 >
                     Page {page} of {totalPages} ({totalEntries}
                     {totalEntries === 1 ? "message" : "messages"})
                 </p>
                 {totalPages > 0 && (
-                    <div class="flex items-center gap-1" data-paginator>
+                    <div
+                        class="flex items-center gap-1"
+                        data-paginator
+                        aria-label="Page navigation"
+                    >
                         <a
                             href={page > 1 ? `?page=${page - 1}` : undefined}
                             class={`px-2 py-1 rounded text-sm ${page === 1 ? "text-ctp-overlay0 cursor-not-allowed" : "text-ctp-text hover:bg-ctp-surface0 duration-200"}`}
                             aria-disabled={page === 1}
+                            aria-label="Previous page"
                         >
                             ←
                         </a>
                         {miniPages.map((p) =>
                             p === "..." ? (
-                                <span class="text-sm text-ctp-subtext0 px-1">...</span>
+                                <span class="text-sm text-ctp-subtext0 px-1" aria-hidden="true">
+                                    ...
+                                </span>
                             ) : (
                                 <a
                                     href={`?page=${p}`}
                                     class={`px-2 py-1 rounded text-sm duration-200 ${p === page ? "bg-ctp-mauve text-ctp-base font-semibold" : "text-ctp-text hover:bg-ctp-surface0"}`}
+                                    aria-current={p === page ? "page" : undefined}
+                                    aria-label={`Go to page ${p}`}
                                 >
                                     {p}
                                 </a>
@@ -178,6 +208,7 @@ const formatMessage = (message: string) => {
                             href={page < totalPages ? `?page=${page + 1}` : undefined}
                             class={`px-2 py-1 rounded text-sm ${page === totalPages ? "text-ctp-overlay0 cursor-not-allowed" : "text-ctp-text hover:bg-ctp-surface0 duration-200"}`}
                             aria-disabled={page === totalPages}
+                            aria-label="Next page"
                         >
                             →
                         </a>
@@ -187,21 +218,39 @@ const formatMessage = (message: string) => {
         )
     }
 
-    <div id="entries-container" class="flex flex-col gap-4 pt-4">
+    <div
+        id="entries-container"
+        class="flex flex-col gap-4 pt-4"
+        aria-label="Guestbook entries list"
+    >
         {
             guestbookEntries.length === 0 ? (
-                <div class="text-center py-12 text-ctp-subtext0" data-empty-state>
+                <div
+                    class="text-center py-12 text-ctp-subtext0"
+                    data-empty-state
+                    aria-label="No messages state"
+                >
                     <p class="text-lg">No messages yet.</p>
                     <p>Be the first to leave a message!</p>
                 </div>
             ) : (
                 guestbookEntries.map((entry) => (
-                    <div class="bg-ctp-mantle rounded p-4">
+                    <div class="bg-ctp-mantle rounded p-4" aria-label="Guestbook entry">
                         <div class="flex justify-between">
-                            <h1 class="font-semibold">{entry.name}</h1>
-                            <span class="guestbook-date" data-iso={entry.createdAt!} />
+                            <h1 class="font-semibold" aria-label="Entry author">
+                                {entry.name}
+                            </h1>
+                            <span
+                                class="guestbook-date"
+                                data-iso={entry.createdAt!}
+                                aria-label="Entry date"
+                            />
                         </div>
-                        <p class="pt-4" set:html={formatMessage(entry.message)} />
+                        <p
+                            class="pt-4"
+                            set:html={formatMessage(entry.message)}
+                            aria-label="Entry message"
+                        />
                     </div>
                 ))
             )
@@ -211,27 +260,40 @@ const formatMessage = (message: string) => {
     <!-- Bottom page info and paginator -->
     {
         totalEntries > 0 && (
-            <div class="flex justify-between items-center pt-8 pb-12" data-pagination-container>
-                <p class="text-ctp-subtext0" data-page-info>
+            <div
+                class="flex justify-between items-center pt-8 pb-12"
+                data-pagination-container
+                aria-label="Pagination navigation"
+            >
+                <p class="text-ctp-subtext0" data-page-info aria-label="Page and message count">
                     Page {page} of {totalPages} ({totalEntries}
                     {totalEntries === 1 ? "message" : "messages"})
                 </p>
                 {totalPages > 0 && (
-                    <div class="flex items-center gap-1" data-paginator>
+                    <div
+                        class="flex items-center gap-1"
+                        data-paginator
+                        aria-label="Page navigation"
+                    >
                         <a
                             href={page > 1 ? `?page=${page - 1}` : undefined}
                             class={`px-2 py-1 rounded text-sm ${page === 1 ? "text-ctp-overlay0 cursor-not-allowed" : "text-ctp-text hover:bg-ctp-surface0 duration-200"}`}
                             aria-disabled={page === 1}
+                            aria-label="Previous page"
                         >
                             ←
                         </a>
                         {miniPages.map((p) =>
                             p === "..." ? (
-                                <span class="text-sm text-ctp-subtext0 px-1">...</span>
+                                <span class="text-sm text-ctp-subtext0 px-1" aria-hidden="true">
+                                    ...
+                                </span>
                             ) : (
                                 <a
                                     href={`?page=${p}`}
                                     class={`px-2 py-1 rounded text-sm duration-200 ${p === page ? "bg-ctp-mauve text-ctp-base font-semibold" : "text-ctp-text hover:bg-ctp-surface0"}`}
+                                    aria-current={p === page ? "page" : undefined}
+                                    aria-label={`Go to page ${p}`}
                                 >
                                     {p}
                                 </a>
@@ -241,6 +303,7 @@ const formatMessage = (message: string) => {
                             href={page < totalPages ? `?page=${page + 1}` : undefined}
                             class={`px-2 py-1 rounded text-sm ${page === totalPages ? "text-ctp-overlay0 cursor-not-allowed" : "text-ctp-text hover:bg-ctp-surface0 duration-200"}`}
                             aria-disabled={page === totalPages}
+                            aria-label="Next page"
                         >
                             →
                         </a>
