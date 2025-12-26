@@ -268,7 +268,6 @@
         off.height = size;
         const ctx = off.getContext('2d')!;
         ctx.save();
-        ctx.filter = 'brightness(0) invert(1)';
         ctx.drawImage(snowflakeImg, 0, 0, size, size);
         ctx.restore();
         return off;
