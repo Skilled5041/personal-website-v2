@@ -65,18 +65,24 @@ function getPageNumbers(current: number, total: number): (number | "...")[] {
 
 const miniPages = getPageNumbers(page, totalPages);
 
-const dateFormat = new Intl.DateTimeFormat("en-US", {
-    year: "numeric", // "2025"
-    month: "long", // "December"
-    day: "numeric", // "21"
-    hour: "numeric", // "10"
-    minute: "numeric", // "45"
-    second: "numeric", // "30"
-    hour12: false, // 24 hr time
+const locale = new Intl.Locale("en-CA", {
+    hourCycle: "h23",
 });
 
-const formatDate = (date: Date) => {
-    return dateFormat.format(date);
+const dateFormat = new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: false,
+});
+
+const formatDate = (date: Date | string) => {
+    // Accepts Date or string, parses as local time
+    const d = typeof date === "string" ? new Date(date) : date;
+    return dateFormat.format(d);
 };
 
 // Sanitize HTML and convert newlines to <br> for safe rendering
