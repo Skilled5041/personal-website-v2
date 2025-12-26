@@ -3,8 +3,11 @@ import { Icon } from "astro-icon/components";
 import { POST } from "../api/increment-visits-count";
 import VisitsCounterTooltip from "./VisitsCounterTooltip";
 
-const visitsCounterResponse = await POST();
-const visitsCounterData = await visitsCounterResponse.json();
+let visitsCounterData = { countValue: "unknown" };
+if (import.meta.env.PUBLIC_ENV !== "DEV") {
+    const visitsCounterResponse = await POST();
+    visitsCounterData = await visitsCounterResponse.json();
+}
 ---
 
 <VisitsCounterTooltip client:idle>
