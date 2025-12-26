@@ -199,7 +199,7 @@ const formatMessage = (message: string) => {
                     <div class="bg-ctp-mantle rounded p-4">
                         <div class="flex justify-between">
                             <h1 class="font-semibold">{entry.name}</h1>
-                            <h1>{formatDate(entry.createdAt!)}</h1>
+                            <span class="guestbook-date" data-iso={entry.createdAt!} />
                         </div>
                         <p class="pt-4" set:html={formatMessage(entry.message)} />
                     </div>
@@ -422,6 +422,41 @@ const formatMessage = (message: string) => {
         });
     }
 
+    // Format all .guestbook-date elements to local time zone on client
+    function formatAllDatesToLocal() {
+        const dateElements = document.querySelectorAll(".guestbook-date");
+        dateElements.forEach((el) => {
+            const iso = el.getAttribute("data-iso");
+            if (!iso) return;
+            const d = new Date(iso);
+            el.textContent = d.toLocaleString(undefined, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+                hour12: false,
+            });
+        });
+    }
+
+    // Run on load
+    formatAllDatesToLocal();
+
+    // Also run after a new entry is added
+    function observeNewEntries() {
+        const observer = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+                    formatAllDatesToLocal();
+                }
+            }
+        });
+        observer.observe(entriesContainer, { childList: true });
+    }
+    observeNewEntries();
+
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -511,18 +546,11 @@ const formatMessage = (message: string) => {
             nameEl.className = "font-semibold";
             nameEl.textContent = decodeEntities(result.data.name || "");
 
-            const dateEl = document.createElement("h1");
-            dateEl.innerText = result.data.createdAt
-                ? new Date(result.data.createdAt).toLocaleString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                      second: "numeric",
-                      hour12: false,
-                  })
-                : "";
+            const dateEl = document.createElement("span");
+            dateEl.className = "guestbook-date";
+            const dateValue = result.data.createdAt ? String(result.data.createdAt) : "";
+            dateEl.setAttribute("data-iso", dateValue);
+            // Will be formatted by formatAllDatesToLocal()
 
             header.appendChild(nameEl);
             header.appendChild(dateEl);
@@ -552,7 +580,7 @@ const formatMessage = (message: string) => {
                         <div class="bg-ctp-mantle rounded p-4">
                             <div class="flex justify-between">
                                 <h1 class="font-semibold">${sanitize(entry.name)}</h1>
-                                <h1>${entry.createdAt ? new Date(entry.createdAt).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: false }) : ""}</h1>
+                                <span class="guestbook-date" data-iso="${entry.createdAt}"></span>
                             </div>
                             <p>${sanitize(entry.message, true)}</p>
                         </div>
