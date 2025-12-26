@@ -88,9 +88,14 @@ const hackathons = [
         class="w-4 h-4 md:w-5 md:h-5 text-ctp-mauve flex-shrink-0 mt-1"
         aria-hidden="true"
     />
-    <details class="text-sm md:text-base group" id="hackathon-details">
+    <details
+        class="text-sm md:text-base group"
+        id="hackathon-details"
+        aria-label="Hackathon wins list"
+    >
         <summary
             class="cursor-pointer select-none font-medium text-ctp-text flex items-center gap-1"
+            aria-label="Expand to see hackathon wins"
         >
             <span>11x hackathon winner</span>
             <span
@@ -100,10 +105,17 @@ const hackathons = [
                 <Icon name="iconamoon--arrow-down-2" class="w-4 h-4" aria-hidden="true" />
             </span>
         </summary>
-        <ul id="hackathon-list" class="sm:pl-4 mt-1 space-y-1 text-xs sm:text-sm">
+        <ul
+            id="hackathon-list"
+            class="sm:pl-4 mt-1 space-y-1 text-xs sm:text-sm"
+            aria-label="List of hackathons won"
+        >
             {
                 hackathons.map((h) => (
-                    <li class="flex items-start gap-2">
+                    <li
+                        class="flex items-start gap-2"
+                        aria-label={`Hackathon: ${h.name}, Result: ${h.result}`}
+                    >
                         <Icon
                             name="mage--l-arrow-down-right"
                             class="w-2 h-2 sm:w-3 sm:h-3 text-ctp-mauve-100 mt-1 flex-shrink-0"
@@ -123,6 +135,7 @@ const hackathons = [
                                 class="underline duration-200 hover:decoration-ctp-subtext0 decoration-ctp-surface2 font-medium inline-flex items-center gap-1"
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                aria-label={`Visit ${h.name} website`}
                             >
                                 {h.name}
                             </a>
