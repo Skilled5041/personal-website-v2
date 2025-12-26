@@ -7,6 +7,7 @@
     let context: CanvasRenderingContext2D;
     let animationFrameId: number;
     let snowflakeImg: HTMLImageElement;
+    let snowflakeWhiteImg: HTMLCanvasElement | null = null;
 
     type Snowflake = {
         x: number;
@@ -189,18 +190,19 @@
         settledFlakes = settledFlakes.filter((flake) => {
             flake.fadeElapsed = (flake.fadeElapsed || 0) + (delta * 1000); // ms
             let alpha = Math.max(0, 0.4 * (1 - (flake.fadeElapsed || 0) / FADE_DURATION));
-            context.save();
-            context.globalAlpha = alpha;
-            context.translate(flake.x, flake.y);
-            context.filter = "brightness(0) invert(1)";
-            context.drawImage(
-                snowflakeImg,
-                -flake.radius * 12,
-                -flake.radius * 12,
-                flake.radius * 24,
-                flake.radius * 24,
-            );
-            context.restore();
+            if (snowflakeWhiteImg) {
+                context.save();
+                context.globalAlpha = alpha;
+                context.translate(flake.x, flake.y);
+                context.drawImage(
+                    snowflakeWhiteImg,
+                    -flake.radius * 12,
+                    -flake.radius * 12,
+                    flake.radius * 24,
+                    flake.radius * 24,
+                );
+                context.restore();
+            }
             return (flake.fadeElapsed || 0) < FADE_DURATION;
         });
 
@@ -214,20 +216,21 @@
                 layer.flakes.push(createSnowflake(layer.flakes[0]?.layer ?? 0, -5));
             }
             // Animate/draw falling flakes
+            context.save();
+            context.globalAlpha = layer.alpha;
             layer.flakes.forEach((flake, i) => {
-                context.save();
-                context.globalAlpha = layer.alpha; // Use layer alpha
-                context.translate(flake.x, flake.y);
-                context.filter = "brightness(0) invert(1)";
-                context.drawImage(
-                    snowflakeImg,
-                    -flake.radius * 12,
-                    -flake.radius * 12,
-                    flake.radius * 24,
-                    flake.radius * 24,
-                );
-                context.restore();
-
+                if (snowflakeWhiteImg) {
+                    context.save();
+                    context.translate(flake.x, flake.y);
+                    context.drawImage(
+                        snowflakeWhiteImg,
+                        -flake.radius * 12,
+                        -flake.radius * 12,
+                        flake.radius * 24,
+                        flake.radius * 24,
+                    );
+                    context.restore();
+                }
                 flake.y += flake.fallSpeed * delta;
                 flake.x += flake.drift * delta;
 
@@ -235,27 +238,37 @@
                 const pileX = Math.round(flake.x);
                 if (pileX >= 0 && pileX < snowPile.length) {
                     if (flake.y + flake.radius * 12 >= snowPile[pileX]) {
-                        // Move to settledFlakes for fading
                         settledFlakes.push({ ...flake, isSettled: true, fadeElapsed: 0 });
-                        // Raise the pile based on flake size
                         for (let dx = -flake.radius * 6; dx <= flake.radius * 6; dx++) {
                             const px = pileX + dx;
                             if (px >= 0 && px < snowPile.length) {
-                                snowPile[px] -= flake.radius * 2; // SNOWPILE_HEIGHT based on radius
+                                snowPile[px] -= flake.radius * 2;
                             }
                         }
-                        // Remove from falling flakes
                         layer.flakes[i] = createSnowflake(layer.flakes[i].layer, -5);
                     }
                 }
-
-                // Wrap horizontal
                 if (flake.x > window.innerWidth) flake.x = 0;
                 if (flake.x < 0) flake.x = window.innerWidth;
             });
+            context.restore();
         });
 
         animationFrameId = window.requestAnimationFrame(drawFrame);
+    }
+
+    function makeWhiteSnowflakeImage() {
+        // Create an offscreen canvas
+        const size = 48; // px, large enough for all flake sizes
+        const off = document.createElement('canvas');
+        off.width = size;
+        off.height = size;
+        const ctx = off.getContext('2d')!;
+        ctx.save();
+        ctx.filter = 'brightness(0) invert(1)';
+        ctx.drawImage(snowflakeImg, 0, 0, size, size);
+        ctx.restore();
+        return off;
     }
 
     let initialized = false;
@@ -270,6 +283,7 @@
         snowflakeImg = new Image();
         snowflakeImg.src = snowflakeSvg.src;
         snowflakeImg.onload = () => {
+            snowflakeWhiteImg = makeWhiteSnowflakeImage();
             resizeCanvas();
             initializeLayers();
             drawFrame();
